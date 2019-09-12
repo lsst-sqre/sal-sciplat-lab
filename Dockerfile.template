@@ -1,0 +1,216 @@
+FROM {{BASE_IMAGE}}:{{TAG}}
+USER root
+SHELL ["/bin/bash", "-lc"]
+WORKDIR /tmp
+# Start gluing in Tiago's SAL stuff.  We are leaving out the system stuff
+#  that won't work in a container, and most of the X stuff, since there is no
+#  X server available.
+
+#RUN  mkdir -p /opt/lsst/sal && \
+#     adduser -u 1004 -m -U -G lsst_lcl,jovyan -s /bin/bash \
+#     -c "SAL user" -d /opt/lsst/sal/saluser saluser
+COPY lsst-ts.repo /etc/yum.repos.d
+RUN  yum repolist && \
+      yum install -y https://centos7.iuscommunity.org/ius-release.rpm
+RUN  yum install -y --enablerepo=extras \
+      dos2unix \
+      java-1.8.0-openjdk-devel \
+      OpenSpliceDDS-6.9.0-1
+RUN  cd /usr/share/zoneinfo && \
+      wget https://www.ietf.org/timezones/data/leap-seconds.list
+
+# We try to avoid conda in the build, and we add things to both system and
+#  stack pythons when possible
+
+RUN  pip3 install --upgrade \
+      gitpython \
+      ephem \
+      jinja2 \
+      sqlalchemy \
+      "documenteer[pipelines]==0.4.2" \
+      "kafkit[aiohttp]" \
+      cmd2 \
+      confluent_kafka \
+      asynccmd \
+      pycodestyle
+RUN source ${LOADSTACK} && \
+     pip install --upgrade \
+      gitpython \
+      ephem \
+      jinja2 \
+      sqlalchemy \
+      "documenteer[pipelines]==0.4.2" \
+      "kafkit[aiohttp]" \
+      cmd2 \
+      confluent_kafka \
+      asynccmd \
+      pycodestyle
+
+RUN mkdir -p /opt/lsst/sal
+ENV LSST_SDK_INSTALL=/usr/share/git/ts_sal
+ENV OSPL_HOME=/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux
+ENV PYTHON_BUILD_LOCATION=/opt/lsst/software/stack/python/current
+COPY salbldsteps.bash /opt/lsst/sal
+ENV SALSTACK=/opt/lsst/sal/salbldsteps.bash
+ENV GITROOT="/usr/share/git"
+
+#### Now move on to SAL object builds
+
+ARG config_ocs_v="v0.1.0"
+ARG sal_v="v3.10.0"
+ARG salobj_v="v4.5.0"
+ARG xml_v="v4.1.1"
+ARG idl_v="v0.3.0"
+ARG config_attcs_v="v0.1-alpha.4"
+ARG scriptqueue_v="v2.2.2"
+ARG externalscripts="v0.2.0"
+ARG standardscripts="v0.6.0"
+ARG ATDome="v0.7.0"
+ARG ATDomeTrajectory="v1.0.0"
+
+RUN cd ${GITROOT} && \
+    gitsrc="ts_config_ocs:${config_ocs_v} \
+            ts_sal:${sal_v} \
+            ts_salobj:${salobj_v} \
+            ts_xml:${xml_v} \
+            ts_idl:${idl_v} \
+            ts_config_attcs:${config_attcs_v} \
+            ts_scriptqueue:${scriptqueue_v}" && \
+    rb="https://github.com/lsst-ts" && \
+    for g in $gitsrc ; do \
+        r=$(echo ${g} | cut -d ':' -f 1) \
+	t=$(echo ${g} | cut -d ':' -f 2) ;\
+	git clone --branch ${t} --single-branch ${rb}/${r}.git ; \
+	cd ${r} ; \
+	git checkout -b ${t} ; \
+	cd .. ; \
+    done
+RUN  cd ${GITROOT}/ts_config_ocs && \
+      source ${SALSTACK} && \
+      eups declare -r . ts_config_ocs -t current && \
+      setup ts_config_ocs -t current
+RUN  cd ${GITROOT}/ts_xml && \
+      source ${SALSTACK} && \
+      eups declare -r . ts_xml -t current
+RUN  cd ${LSST_SDK_INSTALL} && \
+      source ${SALSTACK} && \
+      eups declare -r . ts_sal -t current && \
+      setup ts_sal -t current && \
+      mkdir -p ${SAL_WORK_DIR} && \
+      mkdir -p ${TS_SAL_DIR}/lib && \
+      scons && \
+      make_salpy_libs.py Script ScriptQueue LinearStage TunableLaser \
+      Electrometer ATMonochromator FiberSpectrograph \
+      ATPtg \
+      Environment \
+      ATCamera ATArchiver ATHeaderService ATSpectrograph      
+RUN  cd ${GITROOT}/ts_idl && \
+      source ${SALSTACK} && \
+      setup ts_sal -t current && \
+      eups declare -r . ts_idl -t current && \
+      setup ts_idl -t current && \
+      scons
+RUN  cd ${GITROOT} && \
+      mkdir dds && \
+      cd dds && \
+      os="/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux" && \
+      tar xvfz ${os}/tools/python-support.tgz && \
+      dds_v="v6.9.0" && \
+      git config --global user.email "saluser@lsst.org" && \
+      git config --global user.name "SAL User" && \
+      git init && \
+      git add . && \
+      git checkout -b ${dds_v} && \
+      git commit -a -m ${dds_v} && \
+      git tag -a ${dds_v} -m ${dds_v} && \
+      cd python/src && \
+      source ${SALSTACK} && \
+      setup ts_idl -t current && \
+      python setup.py install && \
+      echo "/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux/lib" \
+       >> /etc/ld.so.conf.d/opensplice-x86_64.conf && \
+      ldconfig -v
+RUN  source ${SALSTACK} && \
+      setup ts_idl -t current && \
+      make_idl_files.py Test Script && \
+      make_salpy_libs.py Test Script
+RUN  cd ${GITROOT}/ts_salobj && \
+      source ${SALSTACK} && \
+      setup ts_sal -t current && \
+      setup ts_idl -t current && \
+      eups declare -r . ts_salobj -t current && \
+      setup ts_salobj -t current && \
+      scons || (echo "SCONS FAILED: running py.test" && py.test)
+RUN  cd ${GITROOT}/ts_config/attcs && \
+      source ${SALSTACK} && \
+      eups declare -r . ts_config_attcs -t current && \
+      setup ts_config_attcs -t current && \
+      scons
+RUN  cd ${GITROOT}/ts_scriptqueue && \
+      source ${SALSTACK} && \
+      setup ts_sal -t current && \
+      setup ts_salobj -t current && \
+      eups declare -r . ts_scriptqueue -t current && \
+      setup ts_scriptqueue -t current && \
+      scons || echo "Building scriptqueue failed: IGNORING"
+RUN  cd ${GITROOT}/ts_ATDome && \
+      source ${SALSTACK} && \
+      setup ts_salobj -t current && \
+      make_salpy_libs_py ADome && \
+      eups declare -r . ts_ATDome -t current && \
+      setup ts_ATDome -t current && \
+      scons
+RUN  cd ${GITROOT}/ts_ATDomeTrajectory && \
+      source ${SALSTACK} && \
+      setup ts_salobj -t current && \
+      make_salpy_libs_py ATMCS ADomeTrajectory && \
+      setup ts_config_attcs -t current && \
+      eups declare -r . ts_ATDomeTrajectory -t current && \
+      setup ts_ATDomeTrajectory -t current && \
+      scons
+RUN  cd ${GITROOT}/ts_ATMCSSimulator && \
+      source ${SALSTACK} && \
+      setup ts_salobj -t current && \
+      setup ts_config_attcs -t current && \
+      eups declare -r . ts_ATMCSSimulator -t current && \
+      setup ts_ATMCSSimulator -t current && \
+      scons
+RUN  cd ${GITROOT}/ts_standardscripts && \
+      source ${SALSTACK} && \
+      setup ts_sal -t current && \
+      setup ts_salobj -t current && \
+      setup ts_scriptqueue -t current && \
+      make_salpy_libs.py Electrometer ATPtg ATCamera \
+       ATMonochromator ATSpectrograph FiberSpectrograph && \
+      eups declare -r . ts_standardscripts -t current && \
+      setup ts_config_attcs -t current && \
+      setup ts_config_ocs -t current && \
+      setup ts_ATMCSSimulator -t current && \
+      setup ts_standardscripts -t current && \
+      scons || echo "Building standardscripts failed: IGNORING"
+RUN  cd ${GITROOT}/ts_externalscripts && \
+      souce ${SALSTACK} && \
+      setup ts_sal -t current && \
+      setup ts_salobj -t current && \
+      setup ts_scriptqueue -t current && \
+      setup ts_standardscripts && \
+      setup ts_config_attcs -t current && \
+      setup ts_config_ocs -t current && \
+      setup ts_ATMCSSimulator -t current && \
+      setup ts_externalscripts -t current && \
+      eups declare -r . ts_externalscripts -t current && \
+      setup ts_externalscripts -t current && \
+      scons || echo "Building externalscripts failed: IGNORING"
+# Make the "LSST" kernel set up ts_sal objects too
+COPY sal_lsstlaunch.bash ${jl}/lsstlaunch.bash
+
+# Back to the Lab environment
+WORKDIR /tmp
+# This needs to be numeric for k8s non-root contexts
+USER 769:769
+ENTRYPOINT [ "/bin/bash", "-lc" ]
+CMD [ "/opt/lsst/software/jupyterlab/provisionator.bash" ]
+
+LABEL description="SAL version of sciplat-lab: {{IMAGE_NAME}}" \
+       name="{{IMAGE_NAME}}" \
+       version="{{VERSION}}"
