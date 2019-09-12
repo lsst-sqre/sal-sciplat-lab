@@ -63,10 +63,10 @@ ARG xml_v="v4.1.1"
 ARG idl_v="v0.3.0"
 ARG config_attcs_v="v0.1-alpha.4"
 ARG scriptqueue_v="v2.2.2"
-ARG externalscripts="v0.2.0"
-ARG standardscripts="v0.6.0"
-ARG ATDome="v0.7.0"
-ARG ATDomeTrajectory="v1.0.0"
+ARG externalscripts_v="v0.2.0"
+ARG standardscripts_v="v0.6.0"
+ARG ATDome_v="v0.7.0"
+ARG ATDomeTrajectory_v="v1.0.0"
 
 RUN cd ${GITROOT} && \
     gitsrc="ts_config_ocs:${config_ocs_v} \
@@ -75,7 +75,11 @@ RUN cd ${GITROOT} && \
             ts_xml:${xml_v} \
             ts_idl:${idl_v} \
             ts_config_attcs:${config_attcs_v} \
-            ts_scriptqueue:${scriptqueue_v}" && \
+            ts_scriptqueue:${scriptqueue_v} \
+	    ts_externalscripts:${externalscripts_v} \
+            ts_standardscripts:${standardscripts_v} \
+            ts_ATDome:${ATDome_v} \
+            ts_ATDomeTrajectory:${ATDomeTrajectory_v}" && \
     rb="https://github.com/lsst-ts" && \
     for g in $gitsrc ; do \
         r=$(echo ${g} | cut -d ':' -f 1) \
@@ -141,11 +145,10 @@ RUN  cd ${GITROOT}/ts_salobj && \
       eups declare -r . ts_salobj -t current && \
       setup ts_salobj -t current && \
       scons || (echo "SCONS FAILED: running py.test" && py.test)
-RUN  cd ${GITROOT}/ts_config/attcs && \
+RUN  cd ${GITROOT}/ts_config_attcs && \
       source ${SALSTACK} && \
       eups declare -r . ts_config_attcs -t current && \
-      setup ts_config_attcs -t current && \
-      scons
+      setup ts_config_attcs -t current
 RUN  cd ${GITROOT}/ts_scriptqueue && \
       source ${SALSTACK} && \
       setup ts_sal -t current && \
@@ -153,10 +156,11 @@ RUN  cd ${GITROOT}/ts_scriptqueue && \
       eups declare -r . ts_scriptqueue -t current && \
       setup ts_scriptqueue -t current && \
       scons || echo "Building scriptqueue failed: IGNORING"
+RUN  ls ${GITROOT} && exit 2
 RUN  cd ${GITROOT}/ts_ATDome && \
       source ${SALSTACK} && \
       setup ts_salobj -t current && \
-      make_salpy_libs_py ADome && \
+      make_salpy_libs_py ATDome && \
       eups declare -r . ts_ATDome -t current && \
       setup ts_ATDome -t current && \
       scons
