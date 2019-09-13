@@ -159,25 +159,26 @@ RUN  cd ${GITROOT}/ts_scriptqueue && \
 RUN  cd ${GITROOT}/ts_ATDome && \
       source ${SALSTACK} && \
       setup ts_salobj -t current && \
-      make_salpy_libs_py ATDome && \
+      setup ts_config_attcs -t current && \
+      make_salpy_libs.py ATDome && \
       eups declare -r . ts_ATDome -t current && \
       setup ts_ATDome -t current && \
-      scons
+      scons || echo "Building ATDome failed: IGNORING"
 RUN  cd ${GITROOT}/ts_ATDomeTrajectory && \
       source ${SALSTACK} && \
       setup ts_salobj -t current && \
-      make_salpy_libs_py ATMCS ADomeTrajectory && \
+      make_salpy_libs.py ATMCS ADomeTrajectory && \
       setup ts_config_attcs -t current && \
       eups declare -r . ts_ATDomeTrajectory -t current && \
       setup ts_ATDomeTrajectory -t current && \
-      scons
+      scons || echo "Building ATDomeTrajectory failed: ignoring"
 RUN  cd ${GITROOT}/ts_ATMCSSimulator && \
       source ${SALSTACK} && \
       setup ts_salobj -t current && \
       setup ts_config_attcs -t current && \
       eups declare -r . ts_ATMCSSimulator -t current && \
       setup ts_ATMCSSimulator -t current && \
-      scons
+      scons || echo "Building ATMCSSimulator failed: ignoring"
 RUN  cd ${GITROOT}/ts_standardscripts && \
       source ${SALSTACK} && \
       setup ts_sal -t current && \
