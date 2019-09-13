@@ -193,7 +193,7 @@ RUN  cd ${GITROOT}/ts_standardscripts && \
       setup ts_standardscripts -t current && \
       scons || echo "Building standardscripts failed: IGNORING"
 RUN  cd ${GITROOT}/ts_externalscripts && \
-      souce ${SALSTACK} && \
+      source ${SALSTACK} && \
       setup ts_sal -t current && \
       setup ts_salobj -t current && \
       setup ts_scriptqueue -t current && \
