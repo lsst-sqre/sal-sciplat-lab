@@ -210,6 +210,8 @@ COPY sal_lsstlaunch.bash ${jl}/lsstlaunch.bash
 
 # Back to the Lab environment
 
+ENV  jl=/opt/lsst/software/jupyterlab
+ENV  verdir="${jl}/versions.installed"
 # Regenerate installed software list
 RUN  pip3 freeze > ${verdir}/requirements-system.txt && \
       source ${LOADSTACK} && \
