@@ -51,7 +51,7 @@ if [ -z "${TAG}" ] || [ $# -gt 1 ]; then
     usage
 fi
 VERSION=${TAG/#v/r}
-if [ "${JLBLEED}" -eq 1] ; then
+if [ "${JLBLEED}" -eq 1 ] ; then
     VERSION="exp_${VERSION}_jlbleed"
 fi
 if [ "${NOPUSH}" -eq 1 ]; then
