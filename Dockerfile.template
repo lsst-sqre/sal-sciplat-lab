@@ -1,4 +1,4 @@
-FROM {{BASE_IMAGE}}:{{TAG}}
+FROM {{BASE_IMAGE}}:{{VERSION}}
 USER root
 SHELL ["/bin/bash", "-lc"]
 WORKDIR /tmp

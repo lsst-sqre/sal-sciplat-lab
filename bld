@@ -2,11 +2,11 @@
 set -e
 
 function usage() {
-    echo 1>&2 "Usage: $0 [-d] [-x] [-b BASE_IMAGE] \\"
+    echo 1>&2 "Usage: $0 [-d] [-x] [-j] [-b BASE_IMAGE] \\"
     echo 1>&2 "           [-n IMAGE_NAME ] TAG"
     echo 1>&2 "  -d enables dry run (no Docker build or push)"
-    echo 1>&2 "  -s additional adds '_additional' to end of exp. build."
     echo 1>&2 "  -x is 'do not push' (but does build)."
+    echo 1>&2 "  -j adds 'exp_' to front and '_jlbleed' to end of tag."
     echo 1>&2 "  default BASE_IMAGE='lsstsqre/sciplat-lab'"
     echo 1>&2 "  default IMAGE_NAME='lsstsqre/sal-sciplat-lab'"
     echo 1>&2 "  typical TAG='w_2017_35'"
@@ -16,10 +16,11 @@ function usage() {
 OPTIND=1
 DRY_RUN=0
 NOPUSH=0
+JLBLEED=0
 BASE_IMAGE="lsstsqre/sciplat-lab"
 IMAGE_NAME="lsstsqre/sal-sciplat-lab"
 TAG_PREFIX=""
-while getopts ':hdxn:b:' opt; do
+while getopts ':hdxjn:b:' opt; do
     case $opt in
     h)
         usage
@@ -30,6 +31,9 @@ while getopts ':hdxn:b:' opt; do
     x)
         NOPUSH=1
         ;;
+    j)
+	JLBLEED=1
+	;;
     b)
         BASE_IMAGE=${OPTARG}
         ;;
@@ -46,7 +50,10 @@ TAG=${1}
 if [ -z "${TAG}" ] || [ $# -gt 1 ]; then
     usage
 fi
-VERSION=${TAG}
+VERSION=${TAG/#v/r}
+if [ "${JLBLEED}" -eq 1] ; then
+    VERSION="exp_${VERSION}_jlbleed"
+fi
 if [ "${NOPUSH}" -eq 1 ]; then
     VERSION="nopush_${VERSION}"
 fi
