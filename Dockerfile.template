@@ -209,10 +209,16 @@ RUN  cd ${GITROOT}/ts_externalscripts && \
 COPY sal_lsstlaunch.bash ${jl}/lsstlaunch.bash
 
 # Back to the Lab environment
+
+# Regenerate installed software list
+RUN  pip3 freeze > ${verdir}/requirements-system.txt && \
+      source ${LOADSTACK} && \
+      pip3 freeze > ${verdir}/requirements-stack.txt && \
+      rpm -qa | sort > ${verdir}/rpmlist.txt
+
 WORKDIR /tmp
 # This needs to be numeric for k8s non-root contexts
 USER 769:769
-ENTRYPOINT [ "/bin/bash", "-lc" ]
 CMD [ "/opt/lsst/software/jupyterlab/provisionator.bash" ]
 
 LABEL description="SAL version of sciplat-lab: {{IMAGE_NAME}}" \
