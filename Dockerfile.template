@@ -156,7 +156,6 @@ RUN  cd ${GITROOT}/ts_scriptqueue && \
       eups declare -r . ts_scriptqueue -t current && \
       setup ts_scriptqueue -t current && \
       scons || echo "Building scriptqueue failed: IGNORING"
-RUN  ls ${GITROOT} && exit 2
 RUN  cd ${GITROOT}/ts_ATDome && \
       source ${SALSTACK} && \
       setup ts_salobj -t current && \
