@@ -114,6 +114,7 @@ RUN  cd ${LSST_SDK_INSTALL} && \
       source ${SALSTACK} && \
       setup ts_sal -t current && \
       setup ts_idl -t current && \
+      unset LD_PRELOAD && \
       make_idl_files.py ScriptQueue Script Test ATDome ATMCS ATDomeTrajectory \
        Electrometer ATPtg ATCamera ATMonochromator ATSpectrograph \
        FiberSpectrograph
