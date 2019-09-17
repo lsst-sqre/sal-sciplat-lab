@@ -46,13 +46,13 @@ RUN source ${LOADSTACK} && \
       asynccmd \
       pycodestyle
 
+ENV SRCDIR=/opt/lsst/src
 RUN mkdir -p /opt/lsst/sal
-ENV LSST_SDK_INSTALL=/usr/share/git/ts_sal
+ENV LSST_SDK_INSTALL=${SRCDIR}/ts_sal
 ENV OSPL_HOME=/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux
 ENV PYTHON_BUILD_LOCATION=/opt/lsst/software/stack/python/current
 COPY salbldsteps.bash /opt/lsst/sal
 ENV SALSTACK=/opt/lsst/sal/salbldsteps.bash
-ENV GITROOT="/usr/share/git"
 
 #### Now move on to SAL object builds
 
@@ -68,7 +68,7 @@ ARG standardscripts_v="v0.6.0"
 ARG ATDome_v="v0.7.0"
 ARG ATDomeTrajectory_v="v1.0.0"
 
-RUN cd ${GITROOT} && \
+RUN cd ${SRCDIR} && \
     gitsrc="ts_config_ocs:${config_ocs_v} \
             ts_sal:${sal_v} \
             ts_salobj:${salobj_v} \
@@ -89,11 +89,11 @@ RUN cd ${GITROOT} && \
 	git checkout -b ${t} ; \
 	cd .. ; \
     done
-RUN  cd ${GITROOT}/ts_config_ocs && \
+RUN  cd ${SRCDIR}/ts_config_ocs && \
       source ${SALSTACK} && \
       eups declare -r . ts_config_ocs -t current && \
       setup ts_config_ocs -t current
-RUN  cd ${GITROOT}/ts_xml && \
+RUN  cd ${SRCDIR}/ts_xml && \
       source ${SALSTACK} && \
       eups declare -r . ts_xml -t current
 RUN  cd ${LSST_SDK_INSTALL} && \
@@ -104,7 +104,7 @@ RUN  cd ${LSST_SDK_INSTALL} && \
       mkdir -p ${TS_SAL_DIR}/lib && \
       unset LD_PRELOAD && \
       scons
-RUN  cd ${GITROOT}/ts_idl && \
+RUN  cd ${SRCDIR}/ts_idl && \
       source ${SALSTACK} && \
       setup ts_sal -t current && \
       eups declare -r . ts_idl -t current && \
@@ -118,7 +118,7 @@ RUN  cd ${LSST_SDK_INSTALL} && \
       make_idl_files.py ScriptQueue Script Test ATDome ATMCS ATDomeTrajectory \
        Electrometer ATPtg ATCamera ATMonochromator ATSpectrograph \
        FiberSpectrograph
-RUN  cd ${GITROOT} && \
+RUN  cd ${SRCDIR} && \
       mkdir dds && \
       cd dds && \
       os="/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux" && \
@@ -142,25 +142,25 @@ RUN  source ${SALSTACK} && \
       setup ts_idl -t current && \
       make_idl_files.py Test Script && \
       make_salpy_libs.py Test Script
-RUN  cd ${GITROOT}/ts_salobj && \
+RUN  cd ${SRCDIR}/ts_salobj && \
       source ${SALSTACK} && \
       setup ts_sal -t current && \
       setup ts_idl -t current && \
       eups declare -r . ts_salobj -t current && \
       setup ts_salobj -t current && \
       scons || (echo "SCONS FAILED: running py.test" && py.test)
-RUN  cd ${GITROOT}/ts_config_attcs && \
+RUN  cd ${SRCDIR}/ts_config_attcs && \
       source ${SALSTACK} && \
       eups declare -r . ts_config_attcs -t current && \
       setup ts_config_attcs -t current
-RUN  cd ${GITROOT}/ts_scriptqueue && \
+RUN  cd ${SRCDIR}/ts_scriptqueue && \
       source ${SALSTACK} && \
       setup ts_sal -t current && \
       setup ts_salobj -t current && \
       eups declare -r . ts_scriptqueue -t current && \
       setup ts_scriptqueue -t current && \
       scons || echo "Building scriptqueue failed: IGNORING"
-RUN  cd ${GITROOT}/ts_ATDome && \
+RUN  cd ${SRCDIR}/ts_ATDome && \
       source ${SALSTACK} && \
       setup ts_salobj -t current && \
       setup ts_config_attcs -t current && \
@@ -168,7 +168,7 @@ RUN  cd ${GITROOT}/ts_ATDome && \
       eups declare -r . ts_ATDome -t current && \
       setup ts_ATDome -t current && \
       scons || echo "Building ATDome failed: IGNORING"
-RUN  cd ${GITROOT}/ts_ATDomeTrajectory && \
+RUN  cd ${SRCDIR}/ts_ATDomeTrajectory && \
       source ${SALSTACK} && \
       setup ts_salobj -t current && \
       make_salpy_libs.py ATMCS ADomeTrajectory && \
@@ -176,14 +176,14 @@ RUN  cd ${GITROOT}/ts_ATDomeTrajectory && \
       eups declare -r . ts_ATDomeTrajectory -t current && \
       setup ts_ATDomeTrajectory -t current && \
       scons || echo "Building ATDomeTrajectory failed: ignoring"
-RUN  cd ${GITROOT}/ts_ATMCSSimulator && \
+RUN  cd ${SRCDIR}/ts_ATMCSSimulator && \
       source ${SALSTACK} && \
       setup ts_salobj -t current && \
       setup ts_config_attcs -t current && \
       eups declare -r . ts_ATMCSSimulator -t current && \
       setup ts_ATMCSSimulator -t current && \
       scons || echo "Building ATMCSSimulator failed: ignoring"
-RUN  cd ${GITROOT}/ts_standardscripts && \
+RUN  cd ${SRCDIR}/ts_standardscripts && \
       source ${SALSTACK} && \
       setup ts_sal -t current && \
       setup ts_salobj -t current && \
@@ -196,7 +196,7 @@ RUN  cd ${GITROOT}/ts_standardscripts && \
       setup ts_ATMCSSimulator -t current && \
       setup ts_standardscripts -t current && \
       scons || echo "Building standardscripts failed: IGNORING"
-RUN  cd ${GITROOT}/ts_externalscripts && \
+RUN  cd ${SRCDIR}/ts_externalscripts && \
       source ${SALSTACK} && \
       setup ts_sal -t current && \
       setup ts_salobj -t current && \
