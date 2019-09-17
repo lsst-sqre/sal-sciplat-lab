@@ -102,6 +102,7 @@ RUN  cd ${LSST_SDK_INSTALL} && \
       setup ts_sal -t current && \
       mkdir -p ${SAL_WORK_DIR} && \
       mkdir -p ${TS_SAL_DIR}/lib && \
+      unset LD_PRELOAD && \
       scons
 RUN  cd ${GITROOT}/ts_idl && \
       source ${SALSTACK} && \
