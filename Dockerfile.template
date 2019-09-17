@@ -102,18 +102,20 @@ RUN  cd ${LSST_SDK_INSTALL} && \
       setup ts_sal -t current && \
       mkdir -p ${SAL_WORK_DIR} && \
       mkdir -p ${TS_SAL_DIR}/lib && \
-      scons && \
-      make_salpy_libs.py Script ScriptQueue LinearStage TunableLaser \
-      Electrometer ATMonochromator FiberSpectrograph \
-      ATPtg \
-      Environment \
-      ATCamera ATArchiver ATHeaderService ATSpectrograph      
+      scons
 RUN  cd ${GITROOT}/ts_idl && \
       source ${SALSTACK} && \
       setup ts_sal -t current && \
       eups declare -r . ts_idl -t current && \
       setup ts_idl -t current && \
       scons
+RUN  cd ${LSST_SDK_INSTALL} && \
+      source ${SALSTACK} && \
+      setup ts_sal -t current && \
+      setup ts_idl -t current && \
+      make_idl_files.py ScriptQueue Script Test ATDome ATMCS ATDomeTrajectory \
+       Electrometer ATPtg ATCamera ATMonochromator ATSpectrograph \
+       FiberSpectrograph
 RUN  cd ${GITROOT} && \
       mkdir dds && \
       cd dds && \
@@ -217,6 +219,9 @@ RUN  pip3 freeze > ${verdir}/requirements-system.txt && \
       source ${LOADSTACK} && \
       pip3 freeze > ${verdir}/requirements-stack.txt && \
       rpm -qa | sort > ${verdir}/rpmlist.txt
+
+# Clean up /tmp
+RUN rm -rf /tmp/*
 
 WORKDIR /tmp
 # This needs to be numeric for k8s non-root contexts
