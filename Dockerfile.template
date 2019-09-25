@@ -6,7 +6,7 @@ WORKDIR /tmp
 #  that won't work in a container, and most of the X stuff, since there is no
 #  X server available.
 
-RUN  mkdir -p /opt/lsst/sal
+RUN  mkdir -p /opt/lsst/sal /opt/lsst/src
 #     adduser -u 1004 -m -U -G lsst_lcl,jovyan -s /bin/bash \
 #     -c "SAL user" -d /opt/lsst/sal/saluser saluser
 COPY lsst-ts.repo /etc/yum.repos.d
