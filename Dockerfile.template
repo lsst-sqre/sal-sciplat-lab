@@ -109,6 +109,7 @@ RUN  cd ${SRCDIR}/ts_idl && \
       setup ts_sal -t current && \
       eups declare -r . ts_idl -t current && \
       setup ts_idl -t current && \
+      unset LD_PRELOAD && \      
       scons
 RUN  cd ${LSST_SDK_INSTALL} && \
       source ${SALSTACK} && \
@@ -148,6 +149,7 @@ RUN  cd ${SRCDIR}/ts_salobj && \
       setup ts_idl -t current && \
       eups declare -r . ts_salobj -t current && \
       setup ts_salobj -t current && \
+      unset LD_PRELOAD && \      
       scons || (echo "SCONS FAILED: running py.test" && py.test)
 RUN  cd ${SRCDIR}/ts_config_attcs && \
       source ${SALSTACK} && \
@@ -159,6 +161,7 @@ RUN  cd ${SRCDIR}/ts_scriptqueue && \
       setup ts_salobj -t current && \
       eups declare -r . ts_scriptqueue -t current && \
       setup ts_scriptqueue -t current && \
+      unset LD_PRELOAD && \
       scons || echo "Building scriptqueue failed: IGNORING"
 RUN  cd ${SRCDIR}/ts_ATDome && \
       source ${SALSTACK} && \
@@ -167,6 +170,7 @@ RUN  cd ${SRCDIR}/ts_ATDome && \
       make_salpy_libs.py ATDome && \
       eups declare -r . ts_ATDome -t current && \
       setup ts_ATDome -t current && \
+      unset LD_PRELOAD && \
       scons || echo "Building ATDome failed: IGNORING"
 RUN  cd ${SRCDIR}/ts_ATDomeTrajectory && \
       source ${SALSTACK} && \
@@ -175,6 +179,7 @@ RUN  cd ${SRCDIR}/ts_ATDomeTrajectory && \
       setup ts_config_attcs -t current && \
       eups declare -r . ts_ATDomeTrajectory -t current && \
       setup ts_ATDomeTrajectory -t current && \
+      unset LD_PRELOAD && \
       scons || echo "Building ATDomeTrajectory failed: ignoring"
 RUN  cd ${SRCDIR}/ts_ATMCSSimulator && \
       source ${SALSTACK} && \
@@ -182,6 +187,7 @@ RUN  cd ${SRCDIR}/ts_ATMCSSimulator && \
       setup ts_config_attcs -t current && \
       eups declare -r . ts_ATMCSSimulator -t current && \
       setup ts_ATMCSSimulator -t current && \
+      unset LD_PRELOAD && \      
       scons || echo "Building ATMCSSimulator failed: ignoring"
 RUN  cd ${SRCDIR}/ts_standardscripts && \
       source ${SALSTACK} && \
@@ -195,6 +201,7 @@ RUN  cd ${SRCDIR}/ts_standardscripts && \
       setup ts_config_ocs -t current && \
       setup ts_ATMCSSimulator -t current && \
       setup ts_standardscripts -t current && \
+      unset LD_PRELOAD && \      
       scons || echo "Building standardscripts failed: IGNORING"
 RUN  cd ${SRCDIR}/ts_externalscripts && \
       source ${SALSTACK} && \
@@ -208,6 +215,7 @@ RUN  cd ${SRCDIR}/ts_externalscripts && \
       setup ts_externalscripts -t current && \
       eups declare -r . ts_externalscripts -t current && \
       setup ts_externalscripts -t current && \
+      unset LD_PRELOAD && \      
       scons || echo "Building externalscripts failed: IGNORING"
 # Make the "LSST" kernel set up ts_sal objects too
 COPY sal_lsstlaunch.bash ${jl}/lsstlaunch.bash
