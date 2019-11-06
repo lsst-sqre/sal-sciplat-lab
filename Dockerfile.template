@@ -71,16 +71,16 @@ ENV SALSTACK=/opt/lsst/sal/salbldsteps.bash
 
 #### Now move on to SAL object builds
 
-ARG config_ocs_v="v0.1.0"
-ARG sal_v="v3.10.0"
-ARG salobj_v="v4.5.0"
-ARG xml_v="v4.1.1"
-ARG idl_v="v0.3.0"
-ARG config_attcs_v="v0.1-alpha.4"
-ARG scriptqueue_v="v2.2.2"
+ARG config_ocs_v="v0.3.0"
+ARG sal_v="v4.0.0"
+ARG salobj_v="v5.0.0"
+ARG xml_v="v4.4.1"
+ARG idl_v="v1.0.0"
+ARG config_attcs_v="v0.1.0"
+ARG scriptqueue_v="v2.4.2"
 ARG externalscripts_v="v0.2.0"
-ARG standardscripts_v="v0.6.0"
-ARG ATDome_v="v0.7.0"
+ARG standardscripts_v="v0.8.0"
+ARG ATDome_v="v0.8.0"
 ARG ATDomeTrajectory_v="v1.0.0"
 
 RUN cd ${SRCDIR} && \
