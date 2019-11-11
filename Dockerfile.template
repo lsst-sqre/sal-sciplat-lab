@@ -14,10 +14,12 @@ COPY lsst-ts.repo /etc/yum.repos.d
 RUN  yum repolist && \
       yum install -y https://centos7.iuscommunity.org/ius-release.rpm
 ARG  d2u_v="-6.0.3-7.el7"
-ARG  java_v="-1:1.8.0.222.b10-1.el7_7.x86_64"
+ARG  iproute_v="-4.11.0-25.el7"
+ARG  java_v="-1:1.8.0.222.b03-1.el7_7.x86_64"
 ARG  osplice_v="-6.9.0-4"
 RUN  yum install -y --enablerepo=extras \
       "dos2unix${d2u_v}" \
+      "iproute${iproute_v}" \
       "java-1.8.0-openjdk-devel${java_v}" \
       "OpenSpliceDDS${osplice_v}"
 RUN  cd /usr/share/zoneinfo && \
@@ -27,6 +29,7 @@ RUN  cd /usr/share/zoneinfo && \
 #  stack pythons when possible
 
 ARG asynccmd_v="0.2.4"
+ARG asynctest_v="0.13.0"
 ARG cmd2_v="0.9.19"
 ARG confkaf_v="1.2.0"
 ARG documenteer_v="0.4.2"
@@ -39,6 +42,7 @@ ARG sqlal_v="1.3.10"
 
 RUN  pip3 install --upgrade \
       "asynccmd==${asynccmd_v}" \
+      "asynctest==${asynctest_v}" \
       "cmd2==${cmd2_v}" \
       "confluent_kafka==${confkaf_v}" \
       "documenteer[pipelines]==${documenteer_v}" \
@@ -51,6 +55,7 @@ RUN  pip3 install --upgrade \
 RUN source ${LOADSTACK} && \
      pip install --upgrade \
       "asynccmd==${asynccmd_v}" \
+      "asynctest==${asynctest_v}" \
       "cmd2==${cmd2_v}" \
       "confluent_kafka==${confkaf_v}" \
       "documenteer[pipelines]==${documenteer_v}" \
@@ -91,18 +96,18 @@ RUN cd ${SRCDIR} && \
             ts_idl:${idl_v} \
             ts_config_attcs:${config_attcs_v} \
             ts_scriptqueue:${scriptqueue_v} \
-	    ts_externalscripts:${externalscripts_v} \
+            ts_externalscripts:${externalscripts_v} \
             ts_standardscripts:${standardscripts_v} \
             ts_ATDome:${ATDome_v} \
             ts_ATDomeTrajectory:${ATDomeTrajectory_v}" && \
     rb="https://github.com/lsst-ts" && \
     for g in $gitsrc ; do \
         r=$(echo ${g} | cut -d ':' -f 1) \
-	t=$(echo ${g} | cut -d ':' -f 2) ;\
-	git clone --branch ${t} --single-branch ${rb}/${r}.git ; \
-	cd ${r} ; \
-	git checkout -b ${t} ; \
-	cd .. ; \
+        t=$(echo ${g} | cut -d ':' -f 2) ;\
+        git clone --branch ${t} --single-branch ${rb}/${r}.git ; \
+        cd ${r} ; \
+        git checkout -b ${t} ; \
+        cd .. ; \
     done
 RUN  cd ${SRCDIR}/ts_config_ocs && \
       source ${SALSTACK} && \
@@ -156,6 +161,7 @@ RUN  cd ${SRCDIR} && \
       ldconfig -v
 RUN  source ${SALSTACK} && \
       setup ts_idl -t current && \
+      unset LD_PRELOAD && \
       make_idl_files.py Test Script && \
       make_salpy_libs.py Test Script
 RUN  cd ${SRCDIR}/ts_salobj && \
