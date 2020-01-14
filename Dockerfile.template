@@ -171,8 +171,8 @@ RUN  cd ${SRCDIR} && \
 RUN  source ${SALSTACK} && \
       setup ts_idl -t current && \
       unset LD_PRELOAD && \
-      make_idl_files.py Test Script && \
-      make_salpy_libs.py Test Script
+      make_idl_files.py Test Script LOVE && \
+      make_salpy_libs.py Test Script LOVE
 RUN  cd ${SRCDIR}/ts_salobj && \
       source ${SALSTACK} && \
       setup ts_sal -t current && \
