@@ -40,6 +40,7 @@ ARG kafkit_v="0.1.1"
 ARG pycdst_v="2.5.0"
 ARG sqlal_v="1.3.10"
 ARG boto3_v="1.11.2"
+ARG moto_v="1.3.14"
 
 RUN  pip3 install --upgrade \
       "asynccmd==${asynccmd_v}" \
@@ -53,7 +54,8 @@ RUN  pip3 install --upgrade \
       "kafkit[aiohttp]==${kafkit_v}" \
       "pycodestyle==${pycdst_v}" \
       "sqlalchemy==${sqlal_v}" \
-      "boto3==${boto3_v}"
+      "boto3==${boto3_v}" \
+      "moto==${moto_v}"
 RUN source ${LOADSTACK} && \
      pip install --upgrade \
       "asynccmd==${asynccmd_v}" \
@@ -67,7 +69,8 @@ RUN source ${LOADSTACK} && \
       "kafkit[aiohttp]==${kafkit_v}" \
       "pycodestyle==${pycdst_v}" \
       "sqlalchemy==${sqlal_v}" \
-      "boto3==${boto3_v}"
+      "boto3==${boto3_v}" \
+      "moto==${moto_v}"      
 ENV SRCDIR=/opt/lsst/src
 RUN mkdir -p /opt/lsst/sal
 ENV LSST_SDK_INSTALL=${SRCDIR}/ts_sal
