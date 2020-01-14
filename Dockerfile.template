@@ -15,7 +15,7 @@ RUN  yum repolist && \
       yum install -y https://centos7.iuscommunity.org/ius-release.rpm
 ARG  d2u_v="-6.0.3-7.el7"
 ARG  iproute_v="-4.11.0-25.el7"
-ARG  java_v="-1:1.8.0.222.b03-1.el7_7.x86_64"
+ARG  java_v="-1:1.8.0.232.b09-0.el7_7.x86_64"
 ARG  osplice_v="-6.9.0-4"
 RUN  yum install -y --enablerepo=extras \
       "dos2unix${d2u_v}" \
@@ -76,17 +76,19 @@ ENV SALSTACK=/opt/lsst/sal/salbldsteps.bash
 
 #### Now move on to SAL object builds
 
-ARG config_ocs_v="v0.3.0"
+ARG config_ocs_v="v0.4.0"
 ARG sal_v="v4.0.0"
-ARG salobj_v="v5.0.0"
-ARG xml_v="v4.4.1"
+ARG salobj_v="v5.3.0"
+ARG xml_v="v4.6.0"
 ARG idl_v="v1.0.0"
-ARG config_attcs_v="v0.1.0"
-ARG scriptqueue_v="v2.4.2"
-ARG externalscripts_v="v0.2.0"
-ARG standardscripts_v="v0.8.0"
-ARG ATDome_v="v0.8.0"
-ARG ATDomeTrajectory_v="v1.0.0"
+ARG config_attcs_v="v0.2.0"
+ARG scriptqueue_v="v2.4.0"
+ARG externalscripts_v="v0.2.1"
+ARG standardscripts_v="v0.9.1"
+ARG ATDome_v="v0.10.0"
+ARG ATDomeTrajectory_v="v1.2.0"
+ARG ts_simactuators_v="v0.2.0"
+ARG ATMCSSimulator_v="v0.10.1"
 
 RUN cd ${SRCDIR} && \
     gitsrc="ts_config_ocs:${config_ocs_v} \
@@ -99,7 +101,9 @@ RUN cd ${SRCDIR} && \
             ts_externalscripts:${externalscripts_v} \
             ts_standardscripts:${standardscripts_v} \
             ts_ATDome:${ATDome_v} \
-            ts_ATDomeTrajectory:${ATDomeTrajectory_v}" && \
+            ts_ATDomeTrajectory:${ATDomeTrajectory_v} \
+            ts_ATMCSSimulator:${ATMCSSimulator_v} \
+            ts_simactuators:${ts_simactuators_v}" && \
     rb="https://github.com/lsst-ts" && \
     for g in $gitsrc ; do \
         r=$(echo ${g} | cut -d ':' -f 1) \
@@ -210,6 +214,14 @@ RUN  cd ${SRCDIR}/ts_ATMCSSimulator && \
       setup ts_ATMCSSimulator -t current && \
       unset LD_PRELOAD && \
       scons || echo "Building ATMCSSimulator failed: ignoring"
+RUN  cd ${SRCDIR}/ts_simactuators && \
+      source ${SALSTACK} && \
+      setup ts_salobj -t current && \
+      setup ts_config_attcs -t current && \
+      eups declare -r . ts_simactuators -t current && \
+      setup ts_simactuators -t current && \
+      unset LD_PRELOAD && \
+      scons || echo "Building ts_simactuators failed: ignoring"
 RUN  cd ${SRCDIR}/ts_standardscripts && \
       source ${SALSTACK} && \
       setup ts_sal -t current && \
