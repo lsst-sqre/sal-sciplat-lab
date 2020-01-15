@@ -213,7 +213,6 @@ RUN  cd ${SRCDIR}/ts_standardscripts && \
       source ${SALSTACK} && \
       setup ts_sal -t current && \
       setup ts_salobj -t current && \
-      setup ts_scriptqueue -t current && \
       make_salpy_libs.py Electrometer ATPtg ATCamera \
        ATMonochromator ATSpectrograph FiberSpectrograph && \
       eups declare -r . ts_standardscripts -t current && \
