@@ -193,6 +193,14 @@ RUN  cd ${SRCDIR}/ts_simactuators && \
       setup ts_simactuators -t current && \
       unset LD_PRELOAD && \
       scons || echo "Building ts_simactuators failed: ignoring"
+RUN  cd ${SRCDIR}/ts_scriptqueue && \
+      source ${SALSTACK} && \
+      setup ts_sal -t current && \
+      setup ts_salobj -t current && \
+      eups declare -r . ts_scriptqueue -t current && \
+      setup ts_scriptqueue -t current && \
+      unset LD_PRELOAD && \
+      scons || echo "Building scriptqueue failed: IGNORING"
 RUN  cd ${SRCDIR}/ts_standardscripts && \
       source ${SALSTACK} && \
       setup ts_sal -t current && \
@@ -207,14 +215,6 @@ RUN  cd ${SRCDIR}/ts_standardscripts && \
       setup ts_standardscripts -t current && \
       unset LD_PRELOAD && \
       scons || echo "Building standardscripts failed: IGNORING"
-RUN  cd ${SRCDIR}/ts_scriptqueue && \
-      source ${SALSTACK} && \
-      setup ts_sal -t current && \
-      setup ts_salobj -t current && \
-      eups declare -r . ts_scriptqueue -t current && \
-      setup ts_scriptqueue -t current && \
-      unset LD_PRELOAD && \
-      scons || echo "Building scriptqueue failed: IGNORING"
 RUN  cd ${SRCDIR}/ts_ATDome && \
       source ${SALSTACK} && \
       setup ts_salobj -t current && \
