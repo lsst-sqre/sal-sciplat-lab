@@ -185,16 +185,6 @@ RUN  cd ${SRCDIR}/ts_ATMCSSimulator && \
       eups declare -r . ts_ATMCSSimulator -t current && \
       setup ts_ATMCSSimulator -t current && \
       scons || (echo 'SCONS FAILED: running py.test' && py.test)      
-RUN  cd ${SRCDIR}/ts_standardscripts && \
-      source ${SALSTACK} && \
-      eups declare -r . ts_standardscripts -t current && \
-      setup ts_standardscripts -t current && \
-      scons || (echo 'SCONS FAILED: running py.test' && py.test)      
-RUN  cd ${SRCDIR}/ts_scriptqueue && \
-      source ${SALSTACK} && \
-      eups declare -r . ts_scriptqueue -t current && \
-      setup ts_scriptqueue -t current && \
-      scons || (echo 'SCONS FAILED: running py.test' && py.test)      
 RUN  cd ${SRCDIR}/ts_ATDome && \
       source ${SALSTACK} && \
       eups declare -r . ts_ATDome -t current && \
@@ -204,6 +194,16 @@ RUN  cd ${SRCDIR}/ts_ATDomeTrajectory && \
       source ${SALSTACK} && \
       eups declare -r . ts_ATDomeTrajectory -t current && \
       setup ts_ATDomeTrajectory -t current && \
+      scons || (echo 'SCONS FAILED: running py.test' && py.test)      
+RUN  cd ${SRCDIR}/ts_standardscripts && \
+      source ${SALSTACK} && \
+      eups declare -r . ts_standardscripts -t current && \
+      setup ts_standardscripts -t current && \
+      scons || (echo 'SCONS FAILED: running py.test' && py.test)      
+RUN  cd ${SRCDIR}/ts_scriptqueue && \
+      source ${SALSTACK} && \
+      eups declare -r . ts_scriptqueue -t current && \
+      setup ts_scriptqueue -t current && \
       scons || (echo 'SCONS FAILED: running py.test' && py.test)      
 RUN  cd ${SRCDIR}/ts_externalscripts && \
       source ${SALSTACK} && \
