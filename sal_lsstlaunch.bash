@@ -1,17 +1,10 @@
 #!/bin/bash
 CONFIG_FILE=$1
-source /opt/lsst/sal/salbldsteps.bash
-setup ts_xml -t current
-setup ts_idl -t current
-setup ts_sal -t current
-setup ts_salobj -t current
-setup ts_ATDome -t current
-setup ts_ATDomeTrajectory -t current
-setup TS_ATMCSSSimulator -t current
-setup ts_simactuators -t current
-setup ts_standardscripts -t current
-setup ts_scriptqueue -t current
-setup ts_externalscripts -t current
+source /opt/lsst/sal/salbldsteps.bash 2>&1 > /dev/null
+for i in xml idl sal salobj ATDome ATDomeTrajectory ATMCSSimulator \
+             simactuators standardscripts scriptqueue externalscripts ; do
+    setup ts_${i} -t current
+done
 
 setup display_firefly
 if [ -e ${HOME}/notebooks/.user_setups ]; then
