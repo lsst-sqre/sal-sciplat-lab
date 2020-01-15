@@ -185,6 +185,14 @@ RUN  cd ${SRCDIR}/ts_config_attcs && \
       source ${SALSTACK} && \
       eups declare -r . ts_config_attcs -t current && \
       setup ts_config_attcs -t current
+RUN  cd ${SRCDIR}/ts_simactuators && \
+      source ${SALSTACK} && \
+      setup ts_salobj -t current && \
+      setup ts_config_attcs -t current && \
+      eups declare -r . ts_simactuators -t current && \
+      setup ts_simactuators -t current && \
+      unset LD_PRELOAD && \
+      scons || echo "Building ts_simactuators failed: ignoring"
 RUN  cd ${SRCDIR}/ts_scriptqueue && \
       source ${SALSTACK} && \
       setup ts_sal -t current && \
@@ -219,14 +227,6 @@ RUN  cd ${SRCDIR}/ts_ATMCSSimulator && \
       setup ts_ATMCSSimulator -t current && \
       unset LD_PRELOAD && \
       scons || echo "Building ATMCSSimulator failed: ignoring"
-RUN  cd ${SRCDIR}/ts_simactuators && \
-      source ${SALSTACK} && \
-      setup ts_salobj -t current && \
-      setup ts_config_attcs -t current && \
-      eups declare -r . ts_simactuators -t current && \
-      setup ts_simactuators -t current && \
-      unset LD_PRELOAD && \
-      scons || echo "Building ts_simactuators failed: ignoring"
 RUN  cd ${SRCDIR}/ts_standardscripts && \
       source ${SALSTACK} && \
       setup ts_sal -t current && \
