@@ -202,15 +202,15 @@ RUN  cd ${SRCDIR}/ts_standardscripts && \
       scons || (echo 'SCONS FAILED: running py.test' && py.test) || \
         ( echo "ts_standardscripts" >> ${SRCDIR}/buildfailures.txt && \
 	  echo "ts_standardscripts build failed; ignoring" )
-RUN  cd ${SRCDIR}/ts_scriptqueue && \
-      source ${SALSTACK} && \
-      eups declare -r . ts_scriptqueue -t current && \
-      setup ts_scriptqueue -t current && \
-      scons || (echo 'SCONS FAILED: running py.test' && py.test)      
 RUN  cd ${SRCDIR}/ts_externalscripts && \
       source ${SALSTACK} && \
       eups declare -r . ts_externalscripts -t current && \
       setup ts_externalscripts -t current && \
+      scons || (echo 'SCONS FAILED: running py.test' && py.test)      
+RUN  cd ${SRCDIR}/ts_scriptqueue && \
+      source ${SALSTACK} && \
+      eups declare -r . ts_scriptqueue -t current && \
+      setup ts_scriptqueue -t current && \
       scons || (echo 'SCONS FAILED: running py.test' && py.test)      
 # Make the "LSST" kernel set up ts_sal objects too
 COPY sal_lsstlaunch.bash ${jl}/lsstlaunch.bash
