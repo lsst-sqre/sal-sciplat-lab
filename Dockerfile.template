@@ -42,6 +42,8 @@ ARG sqlal_v="1.3.10"
 ARG boto3_v="1.11.2"
 ARG moto_v="1.3.14"
 
+ENV sconstest="scons || (echo 'SCONS FAILED: running py.test' && py.test)"
+
 RUN  pip3 install --upgrade \
       "asynccmd==${asynccmd_v}" \
       "asynctest==${asynctest_v}" \
@@ -78,6 +80,7 @@ ENV OSPL_HOME=/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux
 ENV PYTHON_BUILD_LOCATION=/opt/lsst/software/stack/python/current
 COPY salbldsteps.bash /opt/lsst/sal
 ENV SALSTACK=/opt/lsst/sal/salbldsteps.bash
+ENV LD_PRELOAD=""
 
 #### Now move on to SAL object builds
 
@@ -127,27 +130,24 @@ RUN  cd ${SRCDIR}/ts_xml && \
       eups declare -r . ts_xml -t current
 RUN  cd ${LSST_SDK_INSTALL} && \
       source ${SALSTACK} && \
-      eups declare -r . ts_sal -t current && \
-      setup ts_sal -t current && \
       mkdir -p ${SAL_WORK_DIR} && \
       mkdir -p ${TS_SAL_DIR}/lib && \
-      unset LD_PRELOAD && \
-      scons
+      eups declare -r . ts_sal -t current && \
+      setup ts_sal -t current && \
+      ${sconstest}
 RUN  cd ${SRCDIR}/ts_idl && \
       source ${SALSTACK} && \
-      setup ts_sal -t current && \
       eups declare -r . ts_idl -t current && \
       setup ts_idl -t current && \
-      unset LD_PRELOAD && \
-      scons
+      ${sconstest}
+# Create all the IDL
 RUN  cd ${LSST_SDK_INSTALL} && \
       source ${SALSTACK} && \
       setup ts_sal -t current && \
       setup ts_idl -t current && \
       unset LD_PRELOAD && \
-      make_idl_files.py ScriptQueue Script Test ATDome ATMCS ATDomeTrajectory \
-       Electrometer ATPtg ATCamera ATMonochromator ATSpectrograph \
-       FiberSpectrograph
+      make_idl_files.py $(ls ${TS_XML_DIR}/sal_interfaces | \
+        grep -v xml | tr '\n' ' ')
 RUN  cd ${SRCDIR} && \
       mkdir dds && \
       cd dds && \
@@ -168,92 +168,51 @@ RUN  cd ${SRCDIR} && \
       echo "/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux/lib" \
        >> /etc/ld.so.conf.d/opensplice-x86_64.conf && \
       ldconfig -v
-RUN  source ${SALSTACK} && \
-      setup ts_idl -t current && \
-      unset LD_PRELOAD && \
-      make_idl_files.py Test Script LOVE && \
-      make_salpy_libs.py Test Script LOVE
 RUN  cd ${SRCDIR}/ts_salobj && \
       source ${SALSTACK} && \
-      setup ts_sal -t current && \
-      setup ts_idl -t current && \
       eups declare -r . ts_salobj -t current && \
       setup ts_salobj -t current && \
-      unset LD_PRELOAD && \
-      scons || (echo "SCONS FAILED: running py.test" && py.test)
+      ${sconstest}
 RUN  cd ${SRCDIR}/ts_config_attcs && \
       source ${SALSTACK} && \
       eups declare -r . ts_config_attcs -t current && \
-      setup ts_config_attcs -t current
+      setup ts_config_attcs -t current && \
+      ${sconstest}
 RUN  cd ${SRCDIR}/ts_simactuators && \
       source ${SALSTACK} && \
-      setup ts_salobj -t current && \
-      setup ts_config_attcs -t current && \
       eups declare -r . ts_simactuators -t current && \
       setup ts_simactuators -t current && \
-      unset LD_PRELOAD && \
-      scons || echo "Building ts_simactuators failed: ignoring"
+      ${sconstest}      
 RUN  cd ${SRCDIR}/ts_ATMCSSimulator && \
       source ${SALSTACK} && \
-      setup ts_salobj -t current && \
-      setup ts_config_attcs -t current && \
       eups declare -r . ts_ATMCSSimulator -t current && \
       setup ts_ATMCSSimulator -t current && \
-      unset LD_PRELOAD && \
-      scons || echo "Building ATMCSSimulator failed: ignoring"
+      ${sconstest}      
 RUN  cd ${SRCDIR}/ts_standardscripts && \
       source ${SALSTACK} && \
-      setup ts_sal -t current && \
-      setup ts_salobj -t current && \
-      make_idl_files.py $(ls ${TS_XML_DIR}/sal_interfaces | \
-        grep -v xml | tr '\n' ' ') && \
       eups declare -r . ts_standardscripts -t current && \
-      setup ts_config_attcs -t current && \
-      setup ts_config_ocs -t current && \
-      setup ts_ATMCSSimulator -t current && \
       setup ts_standardscripts -t current && \
-      unset LD_PRELOAD && \
-      scons || echo "Building standardscripts failed: IGNORING"
+      ${sconstest}      
 RUN  cd ${SRCDIR}/ts_scriptqueue && \
       source ${SALSTACK} && \
-      setup ts_sal -t current && \
-      setup ts_salobj -t current && \
       eups declare -r . ts_scriptqueue -t current && \
       setup ts_scriptqueue -t current && \
-      unset LD_PRELOAD && \
-      scons || echo "Building scriptqueue failed: IGNORING"
+      ${sconstest}      
 RUN  cd ${SRCDIR}/ts_ATDome && \
       source ${SALSTACK} && \
-      setup ts_salobj -t current && \
-      setup ts_config_attcs -t current && \
-      make_salpy_libs.py ATDome && \
       eups declare -r . ts_ATDome -t current && \
       setup ts_ATDome -t current && \
-      unset LD_PRELOAD && \
-      scons || echo "Building ATDome failed: IGNORING"
+      ${sconstest}      
 RUN  cd ${SRCDIR}/ts_ATDomeTrajectory && \
       source ${SALSTACK} && \
-      setup ts_salobj -t current && \
-      make_salpy_libs.py ATMCS ADomeTrajectory && \
-      setup ts_config_attcs -t current && \
       eups declare -r . ts_ATDomeTrajectory -t current && \
       setup ts_ATDomeTrajectory -t current && \
-      unset LD_PRELOAD && \
-      scons || echo "Building ATDomeTrajectory failed: ignoring"
+      ${sconstest}      
 RUN  cd ${SRCDIR}/ts_externalscripts && \
       source ${SALSTACK} && \
-      setup ts_sal -t current && \
-      setup ts_salobj -t current && \
-      setup ts_scriptqueue -t current && \
-      setup ts_standardscripts && \
-      setup ts_config_attcs -t current && \
-      setup ts_config_ocs -t current && \
-      setup ts_ATMCSSimulator -t current && \
-      setup ts_externalscripts -t current && \
       eups declare -r . ts_externalscripts -t current && \
       setup ts_externalscripts -t current && \
-      unset LD_PRELOAD && \
-      scons || echo "Building externalscripts failed: IGNORING"
+      ${sconstest}      
 # Make the "LSST" kernel set up ts_sal objects too
 COPY sal_lsstlaunch.bash ${jl}/lsstlaunch.bash
 
