@@ -42,8 +42,6 @@ ARG sqlal_v="1.3.10"
 ARG boto3_v="1.11.2"
 ARG moto_v="1.3.14"
 
-ENV sconstest="scons || (echo 'SCONS FAILED: running py.test' && py.test)"
-
 RUN  pip3 install --upgrade \
       "asynccmd==${asynccmd_v}" \
       "asynctest==${asynctest_v}" \
@@ -134,12 +132,12 @@ RUN  cd ${LSST_SDK_INSTALL} && \
       mkdir -p ${TS_SAL_DIR}/lib && \
       eups declare -r . ts_sal -t current && \
       setup ts_sal -t current && \
-      ${sconstest}
+      scons || (echo 'SCONS FAILED: running py.test' && py.test)
 RUN  cd ${SRCDIR}/ts_idl && \
       source ${SALSTACK} && \
       eups declare -r . ts_idl -t current && \
       setup ts_idl -t current && \
-      ${sconstest}
+      scons || (echo 'SCONS FAILED: running py.test' && py.test)
 # Create all the IDL
 RUN  cd ${LSST_SDK_INSTALL} && \
       source ${SALSTACK} && \
@@ -172,47 +170,47 @@ RUN  cd ${SRCDIR}/ts_salobj && \
       source ${SALSTACK} && \
       eups declare -r . ts_salobj -t current && \
       setup ts_salobj -t current && \
-      ${sconstest}
+      scons || (echo 'SCONS FAILED: running py.test' && py.test)
 RUN  cd ${SRCDIR}/ts_config_attcs && \
       source ${SALSTACK} && \
       eups declare -r . ts_config_attcs -t current && \
       setup ts_config_attcs -t current && \
-      ${sconstest}
+      scons || (echo 'SCONS FAILED: running py.test' && py.test)
 RUN  cd ${SRCDIR}/ts_simactuators && \
       source ${SALSTACK} && \
       eups declare -r . ts_simactuators -t current && \
       setup ts_simactuators -t current && \
-      ${sconstest}      
+      scons || (echo 'SCONS FAILED: running py.test' && py.test)      
 RUN  cd ${SRCDIR}/ts_ATMCSSimulator && \
       source ${SALSTACK} && \
       eups declare -r . ts_ATMCSSimulator -t current && \
       setup ts_ATMCSSimulator -t current && \
-      ${sconstest}      
+      scons || (echo 'SCONS FAILED: running py.test' && py.test)      
 RUN  cd ${SRCDIR}/ts_standardscripts && \
       source ${SALSTACK} && \
       eups declare -r . ts_standardscripts -t current && \
       setup ts_standardscripts -t current && \
-      ${sconstest}      
+      scons || (echo 'SCONS FAILED: running py.test' && py.test)      
 RUN  cd ${SRCDIR}/ts_scriptqueue && \
       source ${SALSTACK} && \
       eups declare -r . ts_scriptqueue -t current && \
       setup ts_scriptqueue -t current && \
-      ${sconstest}      
+      scons || (echo 'SCONS FAILED: running py.test' && py.test)      
 RUN  cd ${SRCDIR}/ts_ATDome && \
       source ${SALSTACK} && \
       eups declare -r . ts_ATDome -t current && \
       setup ts_ATDome -t current && \
-      ${sconstest}      
+      scons || (echo 'SCONS FAILED: running py.test' && py.test)      
 RUN  cd ${SRCDIR}/ts_ATDomeTrajectory && \
       source ${SALSTACK} && \
       eups declare -r . ts_ATDomeTrajectory -t current && \
       setup ts_ATDomeTrajectory -t current && \
-      ${sconstest}      
+      scons || (echo 'SCONS FAILED: running py.test' && py.test)      
 RUN  cd ${SRCDIR}/ts_externalscripts && \
       source ${SALSTACK} && \
       eups declare -r . ts_externalscripts -t current && \
       setup ts_externalscripts -t current && \
-      ${sconstest}      
+      scons || (echo 'SCONS FAILED: running py.test' && py.test)      
 # Make the "LSST" kernel set up ts_sal objects too
 COPY sal_lsstlaunch.bash ${jl}/lsstlaunch.bash
 
