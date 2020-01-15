@@ -201,6 +201,19 @@ RUN  cd ${SRCDIR}/ts_ATMCSSimulator && \
       setup ts_ATMCSSimulator -t current && \
       unset LD_PRELOAD && \
       scons || echo "Building ATMCSSimulator failed: ignoring"
+RUN  cd ${SRCDIR}/ts_standardscripts && \
+      source ${SALSTACK} && \
+      setup ts_sal -t current && \
+      setup ts_salobj -t current && \
+      make_idl_files.py $(ls ${TS_XML_DIR}/sal_interfaces | \
+        grep -v xml | tr '\n' ' ') && \
+      eups declare -r . ts_standardscripts -t current && \
+      setup ts_config_attcs -t current && \
+      setup ts_config_ocs -t current && \
+      setup ts_ATMCSSimulator -t current && \
+      setup ts_standardscripts -t current && \
+      unset LD_PRELOAD && \
+      scons || echo "Building standardscripts failed: IGNORING"
 RUN  cd ${SRCDIR}/ts_scriptqueue && \
       source ${SALSTACK} && \
       setup ts_sal -t current && \
@@ -209,19 +222,6 @@ RUN  cd ${SRCDIR}/ts_scriptqueue && \
       setup ts_scriptqueue -t current && \
       unset LD_PRELOAD && \
       scons || echo "Building scriptqueue failed: IGNORING"
-RUN  cd ${SRCDIR}/ts_standardscripts && \
-      source ${SALSTACK} && \
-      setup ts_sal -t current && \
-      setup ts_salobj -t current && \
-      make_salpy_libs.py Electrometer ATPtg ATCamera \
-       ATMonochromator ATSpectrograph FiberSpectrograph && \
-      eups declare -r . ts_standardscripts -t current && \
-      setup ts_config_attcs -t current && \
-      setup ts_config_ocs -t current && \
-      setup ts_ATMCSSimulator -t current && \
-      setup ts_standardscripts -t current && \
-      unset LD_PRELOAD && \
-      scons || echo "Building standardscripts failed: IGNORING"
 RUN  cd ${SRCDIR}/ts_ATDome && \
       source ${SALSTACK} && \
       setup ts_salobj -t current && \
