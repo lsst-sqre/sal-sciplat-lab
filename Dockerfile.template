@@ -199,9 +199,7 @@ RUN  cd ${SRCDIR}/ts_standardscripts && \
       source ${SALSTACK} && \
       eups declare -r . ts_standardscripts -t current && \
       setup ts_standardscripts -t current && \
-      scons || (echo 'SCONS FAILED: running py.test' && py.test) || \
-        ( echo "ts_standardscripts" >> ${SRCDIR}/buildfailures.txt && \
-	  echo "ts_standardscripts build failed; ignoring" )
+      scons || (echo 'SCONS FAILED: running py.test' && py.test)
 RUN  cd ${SRCDIR}/ts_externalscripts && \
       source ${SALSTACK} && \
       eups declare -r . ts_externalscripts -t current && \
