@@ -16,7 +16,7 @@ RUN  yum repolist && \
 ARG  d2u_v="-6.0.3-7.el7"
 ARG  iproute_v="-4.11.0-25.el7"
 ARG  java_v="-1:1.8.0.242.b08-0.el7_7.x86_64"
-ARG  osplice_v="-6.9.0-4"
+ARG  osplice_v="-6.9.0-5"
 RUN  yum install -y --enablerepo=extras \
       "dos2unix${d2u_v}" \
       "iproute${iproute_v}" \
