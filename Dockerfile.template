@@ -215,8 +215,8 @@ RUN  cd ${SRCDIR}/ts_scriptqueue && \
 
 # Back to the Lab environment
 
-ENV  jl=/opt/lsst/software/jupyterlab
-ENV  verdir="${jl}/versions.installed"
+ARG  jl=/opt/lsst/software/jupyterlab
+ARG  verdir="${jl}/versions.installed"
 
 # Make the "LSST" kernel set up ts_sal objects too
 COPY sal_lsstlaunch.bash ${jl}/lsstlaunch.bash
