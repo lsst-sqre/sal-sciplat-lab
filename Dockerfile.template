@@ -212,13 +212,15 @@ RUN  cd ${SRCDIR}/ts_scriptqueue && \
       eups declare -r . ts_scriptqueue -t current && \
       setup ts_scriptqueue -t current && \
       scons || (echo 'SCONS FAILED: running py.test' && py.test)
-# Make the "LSST" kernel set up ts_sal objects too
-COPY sal_lsstlaunch.bash ${jl}/lsstlaunch.bash
 
 # Back to the Lab environment
 
-ENV  jl=/opt/lsst/software/jupyterlab
-ENV  verdir="${jl}/versions.installed"
+ARG  jl=/opt/lsst/software/jupyterlab
+ARG  verdir="${jl}/versions.installed"
+
+# Make the "LSST" kernel set up ts_sal objects too
+COPY sal_lsstlaunch.bash ${jl}/lsstlaunch.bash
+
 # Regenerate installed software list
 RUN  pip3 freeze > ${verdir}/requirements-system.txt && \
       source ${LOADSTACK} && \
