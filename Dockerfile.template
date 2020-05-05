@@ -16,7 +16,10 @@ RUN  yum repolist && \
 ARG  d2u_v="-6.0.3-7.el7"
 ARG  iproute_v="-4.11.0-25.el7"
 ARG  java_v="-1:1.8.0.242.b08-0.el7_7.x86_64"
-ARG  osplice_v="-6.9.0-5"
+# If you leave the -5 at the end you loose any update made on the package
+# we usually just use OpenSplice version (e.g. 6.9.0) so we capture the
+# latest TSS rev
+ARG  osplice_v="-6.9.0"
 RUN  yum install -y --enablerepo=extras \
       "dos2unix${d2u_v}" \
       "iproute${iproute_v}" \
@@ -81,72 +84,72 @@ ENV SALSTACK=/opt/lsst/sal/salbldsteps.bash
 ENV LD_PRELOAD=""
 
 #### Now move on to SAL object builds
-ARG config_ocs_v="v0.4.0"
-ARG sal_v="v4.0.0"
-ARG salobj_v="v5.4.0"
-ARG xml_v="v4.7.0"
-ARG idl_v="v1.1.0"
-ARG config_attcs_v="v0.2.0"
-ARG scriptqueue_v="v2.5.0"
-ARG externalscripts_v="v0.2.1"
-ARG standardscripts_v="v0.10.0"
-ARG ATDome_v="v1.1.0"
-ARG ATDomeTrajectory_v="v1.2.0"
-ARG ts_simactuators_v="v0.2.0"
-ARG ATMCSSimulator_v="v0.10.1"
+ARG ts_config_ocs="v0.4.0"
+ARG ts_config_attcs="v0.5.0"
+ARG ts_config_mtcalsys="v0.1.0"
+ARG ts_config_eas="v0.1.0"
+ARG ts_config_latiss="v0.3.0"
+ARG ts_config_mttcs="v0.2.0"
+ARG ts_config_atcalsys="v0.1.0"
+ARG ts_sal="v4.1.1"
+ARG ts_salobj="v5.10.0"
+ARG ts_xml="v5.1.0"
+ARG ts_idl="v1.2.0"
+ARG ts_scriptqueue="v2.5.1"
+ARG ts_observatory_control="v0.1.0"
+ARG ts_standardscripts="v1.0.0"
+ARG ts_externalscripts="v0.3.0"
+ARG ts_ATMCSSimulator="v1.0.0"
+ARG ts_ATDome="v1.1.1"
+ARG ts_ATDomeTrajectory="v1.3.1"
+ARG ts_simactuators="v1.0.0"
+ARG ts_hexrotcomm="v0.5.0"
 
-RUN cd ${SRCDIR} && \
-    gitsrc="ts_config_ocs:${config_ocs_v} \
-            ts_sal:${sal_v} \
-            ts_salobj:${salobj_v} \
-            ts_xml:${xml_v} \
-            ts_idl:${idl_v} \
-            ts_config_attcs:${config_attcs_v} \
-            ts_scriptqueue:${scriptqueue_v} \
-            ts_externalscripts:${externalscripts_v} \
-            ts_standardscripts:${standardscripts_v} \
-            ts_ATDome:${ATDome_v} \
-            ts_ATDomeTrajectory:${ATDomeTrajectory_v} \
-            ts_ATMCSSimulator:${ATMCSSimulator_v} \
-            ts_simactuators:${ts_simactuators_v}" && \
+RUN source ${LOADSTACK} && \
+    cd ${SRCDIR} && \
+    gitsrc="ts_config_ocs:${ts_config_ocs} \
+            ts_config_attcs:${ts_config_attcs} \
+            ts_config_mtcalsys:${ts_config_mtcalsys} \
+            ts_config_eas:${ts_config_eas} \
+            ts_config_latiss:${ts_config_latiss} \
+            ts_config_mttcs:${ts_config_mttcs} \
+            ts_config_atcalsys:${ts_config_atcalsys} \
+            ts_sal:${ts_sal} \
+            ts_salobj:${ts_salobj} \
+            ts_xml:${ts_xml} \
+            ts_idl:${ts_idl} \
+            ts_simactuators:${ts_simactuators} \
+            ts_hexrotcomm:${ts_hexrotcomm} \
+            ts_ATMCSSimulator:${ts_ATMCSSimulator} \
+            ts_ATDomeTrajectory:${ts_ATDomeTrajectory} \
+            ts_ATDome:${ts_ATDome} \
+            ts_observatory_control:${ts_observatory_control} \
+            ts_standardscripts:${ts_standardscripts} \
+            ts_externalscripts:${ts_externalscripts} \
+            ts_scriptqueue:${ts_scriptqueue}" && \
     rb="https://github.com/lsst-ts" && \
     for g in $gitsrc ; do \
         r=$(echo ${g} | cut -d ':' -f 1) \
         t=$(echo ${g} | cut -d ':' -f 2) ;\
-        git clone --branch ${t} --single-branch ${rb}/${r}.git ; \
+        git clone --branch ${t} --depth 1 --single-branch ${rb}/${r}.git ; \
         cd ${r} ; \
         git checkout -b ${t} ; \
+        eups declare -r . -t current ; \
         cd .. ; \
     done
-RUN  cd ${SRCDIR}/ts_config_ocs && \
-      source ${SALSTACK} && \
-      eups declare -r . ts_config_ocs -t current && \
-      setup ts_config_ocs -t current
-RUN  cd ${SRCDIR}/ts_xml && \
-      source ${SALSTACK} && \
-      eups declare -r . ts_xml -t current
-# FIXME remove the test-ignore once 4.0.1 or 4.1 is released
+
+ENV LSST_DDS_DOMAIN=citest
+
+# Build SAL. Test us unstable with scons. Rerun with pytest if it fails
 RUN  cd ${LSST_SDK_INSTALL} && \
       source ${SALSTACK} && \
+      unset LD_PRELOAD && \
       mkdir -p ${SAL_WORK_DIR} && \
       mkdir -p ${TS_SAL_DIR}/lib && \
-      eups declare -r . ts_sal -t current && \
       setup ts_sal -t current && \
-      scons || (echo 'SCONS FAILED: running py.test' && py.test) || \
-       echo 'py.test failed, but ignoring pending merge of curr_tai() fix'
-RUN  cd ${SRCDIR}/ts_idl && \
-      source ${SALSTACK} && \
-      eups declare -r . ts_idl -t current && \
-      setup ts_idl -t current && \
-      scons || (echo 'SCONS FAILED: running py.test' && py.test)
-# Create all the IDL
-RUN  cd ${LSST_SDK_INSTALL} && \
-      source ${SALSTACK} && \
-      setup ts_sal -t current && \
-      setup ts_idl -t current && \
-      unset LD_PRELOAD && \
-      make_idl_files.py $(ls ${TS_XML_DIR}/sal_interfaces | \
-        grep -v xml | grep -v MTM1M3 | grep -v HVAC | tr '\n' ' ')
+      scons || (echo 'SCONS FAILED: running pytest' && pytest)
+
+# Install pydds libraries
 RUN  cd ${SRCDIR} && \
       mkdir dds && \
       cd dds && \
@@ -162,56 +165,71 @@ RUN  cd ${SRCDIR} && \
       git tag -a ${dds_v} -m ${dds_v} && \
       cd python/src && \
       source ${SALSTACK} && \
-      setup ts_idl -t current && \
       python setup.py install && \
       echo "/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux/lib" \
        >> /etc/ld.so.conf.d/opensplice-x86_64.conf && \
       ldconfig -v
+
+# Create IDL files and SALPY libraries for salobj unit tests.
+RUN  cd ${LSST_SDK_INSTALL} && \
+      source ${SALSTACK} && \
+      unset LD_PRELOAD && \
+      setup ts_sal -t current && \
+      setup ts_idl -t current && \
+      make_idl_files.py Test Script LOVE && \
+      make_salpy_libs.py Test
+
+# Run salobj unit tests. Test us unstable with scons. Rerun with pytest if it fails.
 RUN  cd ${SRCDIR}/ts_salobj && \
       source ${SALSTACK} && \
-      eups declare -r . ts_salobj -t current && \
+      unset LD_PRELOAD && \
       setup ts_salobj -t current && \
-      scons || (echo 'SCONS FAILED: running py.test' && py.test)
-RUN  cd ${SRCDIR}/ts_config_attcs && \
+      scons || (echo 'SCONS FAILED: running pytest' && pytest)
+
+# Make all idl files
+RUN  cd ${LSST_SDK_INSTALL} && \
       source ${SALSTACK} && \
-      eups declare -r . ts_config_attcs -t current && \
-      setup ts_config_attcs -t current
+      setup ts_sal -t current && \
+      setup ts_idl -t current && \
+      unset LD_PRELOAD && \
+      make_idl_files.py --all
+
 RUN  cd ${SRCDIR}/ts_simactuators && \
       source ${SALSTACK} && \
-      eups declare -r . ts_simactuators -t current && \
       setup ts_simactuators -t current && \
-      scons || (echo 'SCONS FAILED: running py.test' && py.test)
+      scons || (echo 'SCONS FAILED: running pytest' && pytest)
+RUN  cd ${SRCDIR}/ts_hexrotcomm && \
+      source ${SALSTACK} && \
+      setup ts_hexrotcomm -t current && \
+      scons || (echo 'SCONS FAILED: running pytest' && pytest)
 RUN  cd ${SRCDIR}/ts_ATMCSSimulator && \
       source ${SALSTACK} && \
-      eups declare -r . ts_ATMCSSimulator -t current && \
       setup ts_ATMCSSimulator -t current && \
-      scons || (echo 'SCONS FAILED: running py.test' && py.test)
-ENV  LSST_DDS_DOMAIN=citest
+      scons || (echo 'SCONS FAILED: running pytest' && pytest)
 RUN  cd ${SRCDIR}/ts_ATDome && \
       source ${SALSTACK} && \
-      eups declare -r . ts_ATDome -t current && \
       setup ts_ATDome -t current && \
-      scons || (echo 'SCONS FAILED: running py.test' && py.test)
+      scons || (echo 'SCONS FAILED: running pytest' && pytest)
 RUN  cd ${SRCDIR}/ts_ATDomeTrajectory && \
       source ${SALSTACK} && \
-      eups declare -r . ts_ATDomeTrajectory -t current && \
       setup ts_ATDomeTrajectory -t current && \
-      scons || (echo 'SCONS FAILED: running py.test' && py.test)
+      scons || (echo 'SCONS FAILED: running pytest' && pytest)
+RUN  cd ${SRCDIR}/ts_observatory_control && \
+      source ${SALSTACK} && \
+      setup ts_observatory_control -t current && \
+      scons || (echo 'SCONS FAILED: running pytest' && pytest)
 RUN  cd ${SRCDIR}/ts_standardscripts && \
       source ${SALSTACK} && \
-      eups declare -r . ts_standardscripts -t current && \
       setup ts_standardscripts -t current && \
-      scons || (echo 'SCONS FAILED: running py.test' && py.test)
+      scons || (echo 'SCONS FAILED: running pytest' && pytest)
 RUN  cd ${SRCDIR}/ts_externalscripts && \
       source ${SALSTACK} && \
-      eups declare -r . ts_externalscripts -t current && \
       setup ts_externalscripts -t current && \
-      scons || (echo 'SCONS FAILED: running py.test' && py.test)
+      scons || (echo 'SCONS FAILED: running pytest' && pytest)
 RUN  cd ${SRCDIR}/ts_scriptqueue && \
       source ${SALSTACK} && \
-      eups declare -r . ts_scriptqueue -t current && \
       setup ts_scriptqueue -t current && \
-      scons || (echo 'SCONS FAILED: running py.test' && py.test)
+      scons || (echo 'SCONS FAILED: running pytest' && pytest)
 
 # Back to the Lab environment
 
