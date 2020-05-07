@@ -199,12 +199,15 @@ RUN  cd ${LSST_SDK_INSTALL} && \
 
 # It's tempting to do this in a loop, but if you do, you lose all incremental
 #  progress if you're fixing tests while building.
+
+# Also, ts_hexrotcomm needs ts_salobj set up explicitly.
 RUN  cd ${SRCDIR}/ts_simactuators && \
       source ${SALSTACK} && \
       setup ts_simactuators -t current && \
       scons || (echo 'SCONS FAILED: running pytest' && pytest --lf)
 RUN  cd ${SRCDIR}/ts_hexrotcomm && \
       source ${SALSTACK} && \
+      setup ts_salobj -t current && \
       setup ts_hexrotcomm -t current && \
       scons || (echo 'SCONS FAILED: running pytest' && pytest --lf)
 RUN  cd ${SRCDIR}/ts_ATMCSSimulator && \
