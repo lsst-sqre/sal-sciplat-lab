@@ -14,14 +14,12 @@ COPY lsst-ts.repo /etc/yum.repos.d
 RUN  yum repolist && \
       yum install -y https://centos7.iuscommunity.org/ius-release.rpm
 ARG  d2u_v="-6.0.3-7.el7"
-ARG  iproute_v="-4.11.0-25.el7"
+ARG  iproute_v="-4.11.0-25.el7_7.2"
 #ARG  java_v="-1:1.8.0.242.b08-0.el7_7.x86_64"
 # This changes all the time.  Presumably for the better?  Old ones don't
 #  stick around on the repo.
 ARG  java_v="-1:1.8.0"
-# If you leave the -5 at the end you loose any update made on the package
-# we usually just use OpenSplice version (e.g. 6.9.0) so we capture the
-# latest TSS rev
+# Use just the OpenSplice version (e.g. 6.9.0) so we capture the latest TSS rev
 ARG  osplice_v="-6.9.0"
 RUN  yum install -y --enablerepo=extras \
       "dos2unix${d2u_v}" \
@@ -182,7 +180,9 @@ RUN  cd ${LSST_SDK_INSTALL} && \
       make_idl_files.py Test Script LOVE && \
       make_salpy_libs.py Test
 
-# Run salobj unit tests. Test us unstable with scons. Rerun with pytest if it fails.
+# Run salobj unit tests. Test is unstable with scons.
+# Rerun with pytest --lf if it fails.
+
 RUN  cd ${SRCDIR}/ts_salobj && \
       source ${SALSTACK} && \
       unset LD_PRELOAD && \
@@ -196,6 +196,9 @@ RUN  cd ${LSST_SDK_INSTALL} && \
       setup ts_idl -t current && \
       unset LD_PRELOAD && \
       make_idl_files.py --all
+
+# It's tempting to do this in a loop, but if you do, you lose all incremental
+#  progress if you're fixing tests while building.
 RUN  cd ${SRCDIR}/ts_simactuators && \
       source ${SALSTACK} && \
       setup ts_simactuators -t current && \
@@ -251,6 +254,7 @@ RUN  pip3 freeze > ${verdir}/requirements-system.txt && \
 RUN rm -rf /tmp/*
 
 WORKDIR /tmp
+
 # This needs to be numeric for k8s non-root contexts
 USER 769:769
 CMD [ "/opt/lsst/software/jupyterlab/provisionator.bash" ]
