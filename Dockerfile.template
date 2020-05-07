@@ -15,7 +15,10 @@ RUN  yum repolist && \
       yum install -y https://centos7.iuscommunity.org/ius-release.rpm
 ARG  d2u_v="-6.0.3-7.el7"
 ARG  iproute_v="-4.11.0-25.el7"
-ARG  java_v="-1:1.8.0.242.b08-0.el7_7.x86_64"
+#ARG  java_v="-1:1.8.0.242.b08-0.el7_7.x86_64"
+# This changes all the time.  Presumably for the better?  Old ones don't
+#  stick around on the repo.
+ARG  java_v="-1:1.8.0"
 # If you leave the -5 at the end you loose any update made on the package
 # we usually just use OpenSplice version (e.g. 6.9.0) so we capture the
 # latest TSS rev
