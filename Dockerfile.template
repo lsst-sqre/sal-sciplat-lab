@@ -150,7 +150,7 @@ RUN  cd ${LSST_SDK_INSTALL} && \
       mkdir -p ${SAL_WORK_DIR} && \
       mkdir -p ${TS_SAL_DIR}/lib && \
       setup ts_sal -t current && \
-      scons || (echo 'SCONS FAILED: running pytest' && pytest)
+      scons || (echo 'SCONS FAILED: running pytest' && pytest --lf)
 
 # Install pydds libraries
 RUN  cd ${SRCDIR} && \
@@ -187,7 +187,7 @@ RUN  cd ${SRCDIR}/ts_salobj && \
       source ${SALSTACK} && \
       unset LD_PRELOAD && \
       setup ts_salobj -t current && \
-      scons || (echo 'SCONS FAILED: running pytest' && pytest)
+      scons || (echo 'SCONS FAILED: running pytest' && pytest --lf)
 
 # Make all idl files
 RUN  cd ${LSST_SDK_INSTALL} && \
@@ -196,43 +196,42 @@ RUN  cd ${LSST_SDK_INSTALL} && \
       setup ts_idl -t current && \
       unset LD_PRELOAD && \
       make_idl_files.py --all
-
 RUN  cd ${SRCDIR}/ts_simactuators && \
       source ${SALSTACK} && \
       setup ts_simactuators -t current && \
-      scons || (echo 'SCONS FAILED: running pytest' && pytest)
+      scons || (echo 'SCONS FAILED: running pytest' && pytest --lf)
 RUN  cd ${SRCDIR}/ts_hexrotcomm && \
       source ${SALSTACK} && \
       setup ts_hexrotcomm -t current && \
-      scons || (echo 'SCONS FAILED: running pytest' && pytest)
+      scons || (echo 'SCONS FAILED: running pytest' && pytest --lf)
 RUN  cd ${SRCDIR}/ts_ATMCSSimulator && \
       source ${SALSTACK} && \
       setup ts_ATMCSSimulator -t current && \
-      scons || (echo 'SCONS FAILED: running pytest' && pytest)
+      scons || (echo 'SCONS FAILED: running pytest' && pytest --lf)
 RUN  cd ${SRCDIR}/ts_ATDome && \
       source ${SALSTACK} && \
       setup ts_ATDome -t current && \
-      scons || (echo 'SCONS FAILED: running pytest' && pytest)
+      scons || (echo 'SCONS FAILED: running pytest' && pytest --lf)
 RUN  cd ${SRCDIR}/ts_ATDomeTrajectory && \
       source ${SALSTACK} && \
       setup ts_ATDomeTrajectory -t current && \
-      scons || (echo 'SCONS FAILED: running pytest' && pytest)
+      scons || (echo 'SCONS FAILED: running pytest' && pytest --lf)
 RUN  cd ${SRCDIR}/ts_observatory_control && \
       source ${SALSTACK} && \
       setup ts_observatory_control -t current && \
-      scons || (echo 'SCONS FAILED: running pytest' && pytest)
+      scons || (echo 'SCONS FAILED: running pytest' && pytest --lf)
 RUN  cd ${SRCDIR}/ts_standardscripts && \
       source ${SALSTACK} && \
       setup ts_standardscripts -t current && \
-      scons || (echo 'SCONS FAILED: running pytest' && pytest)
+      scons || (echo 'SCONS FAILED: running pytest' && pytest --lf)
 RUN  cd ${SRCDIR}/ts_externalscripts && \
       source ${SALSTACK} && \
       setup ts_externalscripts -t current && \
-      scons || (echo 'SCONS FAILED: running pytest' && pytest)
+      scons || (echo 'SCONS FAILED: running pytest' && pytest --lf)
 RUN  cd ${SRCDIR}/ts_scriptqueue && \
       source ${SALSTACK} && \
       setup ts_scriptqueue -t current && \
-      scons || (echo 'SCONS FAILED: running pytest' && pytest)
+      scons || (echo 'SCONS FAILED: running pytest' && pytest --lf)
 
 # Back to the Lab environment
 
