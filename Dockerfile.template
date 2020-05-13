@@ -31,7 +31,6 @@ RUN  cd /usr/share/zoneinfo && \
 
 # We try to avoid conda in the build, and we add things to both system and
 #  stack pythons when possible
-
 ARG asynccmd_v="0.2.4"
 ARG asynctest_v="0.13.0"
 ARG cmd2_v="0.9.19"
@@ -45,6 +44,7 @@ ARG pycdst_v="2.5.0"
 ARG sqlal_v="1.3.10"
 ARG boto3_v="1.11.2"
 ARG moto_v="1.3.14"
+ARG black_v="19.10b0"
 
 RUN  pip3 install --upgrade \
       "asynccmd==${asynccmd_v}" \
@@ -74,7 +74,8 @@ RUN source ${LOADSTACK} && \
       "pycodestyle==${pycdst_v}" \
       "sqlalchemy==${sqlal_v}" \
       "boto3==${boto3_v}" \
-      "moto==${moto_v}"
+      "moto==${moto_v}" \
+      "black==${black_v}"
 ENV SRCDIR=/opt/lsst/src
 RUN mkdir -p /opt/lsst/sal
 ENV LSST_SDK_INSTALL=${SRCDIR}/ts_sal
@@ -85,24 +86,24 @@ ENV SALSTACK=/opt/lsst/sal/salbldsteps.bash
 ENV LD_PRELOAD=""
 
 #### Now move on to SAL object builds
-ARG ts_config_ocs="v0.4.0"
+ARG ts_config_ocs="v0.5.0"
 ARG ts_config_attcs="v0.5.0"
 ARG ts_config_mtcalsys="v0.1.0"
 ARG ts_config_eas="v0.1.0"
-ARG ts_config_latiss="v0.3.0"
+ARG ts_config_latiss="v0.4.0"
 ARG ts_config_mttcs="v0.2.0"
 ARG ts_config_atcalsys="v0.1.0"
-ARG ts_sal="v4.1.0"
-ARG ts_salobj="v5.10.0"
-ARG ts_xml="v5.0.0"
+ARG ts_sal="v4.1.1"
+ARG ts_salobj="v5.11.0"
+ARG ts_xml="v5.1.0"
 ARG ts_idl="v1.2.0"
 ARG ts_scriptqueue="v2.5.1"
-ARG ts_observatory_control="v0.1.0"
-ARG ts_standardscripts="v1.0.0"
-ARG ts_externalscripts="v0.3.0"
-ARG ts_ATMCSSimulator="v1.0.0"
-ARG ts_ATDome="v1.1.1"
-ARG ts_ATDomeTrajectory="v1.3.1"
+ARG ts_observatory_control="v0.2.0"
+ARG ts_standardscripts="v1.1.0"
+ARG ts_externalscripts="v0.4.0"
+ARG ts_ATMCSSimulator="v1.0.1"
+ARG ts_ATDome="v1.1.2"
+ARG ts_ATDomeTrajectory="v1.3.2"
 ARG ts_simactuators="v1.0.0"
 ARG ts_hexrotcomm="v0.5.0"
 
@@ -182,7 +183,6 @@ RUN  cd ${LSST_SDK_INSTALL} && \
 
 # Run salobj unit tests. Test is unstable with scons.
 # Rerun with pytest --lf if it fails.
-
 RUN  cd ${SRCDIR}/ts_salobj && \
       source ${SALSTACK} && \
       unset LD_PRELOAD && \
@@ -199,7 +199,6 @@ RUN  cd ${LSST_SDK_INSTALL} && \
 
 # It's tempting to do this in a loop, but if you do, you lose all incremental
 #  progress if you're fixing tests while building.
-
 # Also, ts_hexrotcomm needs ts_salobj set up explicitly.
 RUN  cd ${SRCDIR}/ts_simactuators && \
       source ${SALSTACK} && \
@@ -233,15 +232,13 @@ RUN  cd ${SRCDIR}/ts_standardscripts && \
 RUN  cd ${SRCDIR}/ts_externalscripts && \
       source ${SALSTACK} && \
       setup ts_externalscripts -t current && \
-      scons || (echo 'SCONS FAILED: running pytest' && pytest --lf) || \
-        echo "Expected failure; continuing."
+      scons || (echo 'SCONS FAILED: running pytest' && pytest --lf)
 RUN  cd ${SRCDIR}/ts_scriptqueue && \
       source ${SALSTACK} && \
       setup ts_scriptqueue -t current && \
       scons || (echo 'SCONS FAILED: running pytest' && pytest --lf)
 
 # Back to the Lab environment
-
 ARG  jl=/opt/lsst/software/jupyterlab
 ARG  verdir="${jl}/versions.installed"
 
