@@ -188,7 +188,7 @@ RUN  cd ${SRCDIR}/ts_salobj && \
       source ${SALSTACK} && \
       unset LD_PRELOAD && \
       setup ts_salobj -t current && \
-      pytest --lf
+      pytest || pytest --lf
 
 # Make all idl files
 RUN  cd ${LSST_SDK_INSTALL} && \
