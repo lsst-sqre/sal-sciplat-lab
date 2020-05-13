@@ -183,11 +183,12 @@ RUN  cd ${LSST_SDK_INSTALL} && \
 
 # Run salobj unit tests. Test is unstable with scons.
 # Rerun with pytest --lf if it fails.
+# Skip scons entirely for ts_salobj.
 RUN  cd ${SRCDIR}/ts_salobj && \
       source ${SALSTACK} && \
       unset LD_PRELOAD && \
       setup ts_salobj -t current && \
-      scons || (echo 'SCONS FAILED: running pytest' && pytest --lf)
+      pytest --lf
 
 # Make all idl files
 RUN  cd ${LSST_SDK_INSTALL} && \
