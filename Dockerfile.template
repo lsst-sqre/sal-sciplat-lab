@@ -107,6 +107,8 @@ ARG ts_ATDomeTrajectory="v1.3.2"
 ARG ts_simactuators="v1.0.0"
 ARG ts_hexrotcomm="v0.5.0"
 
+# Increase timeout from default of 60.
+ENV LSST_DDS_HISTORYSYNC=300
 RUN source ${LOADSTACK} && \
     cd ${SRCDIR} && \
     gitsrc="ts_config_ocs:${ts_config_ocs} \
@@ -188,7 +190,7 @@ RUN  cd ${SRCDIR}/ts_salobj && \
       source ${SALSTACK} && \
       unset LD_PRELOAD && \
       setup ts_salobj -t current && \
-      pytest || pytest --lf
+      pytest
 
 # Make all idl files
 RUN  cd ${LSST_SDK_INSTALL} && \
