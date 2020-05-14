@@ -15,6 +15,11 @@ RUN  yum repolist && \
       yum install -y https://centos7.iuscommunity.org/ius-release.rpm
 ARG  d2u_v="-6.0.3-7.el7"
 ARG  iproute_v="-4.11.0-25.el7_7.2"
+# These next four are iproute dependencies
+ARG  iptables_v="-1.4.21-34.el7"
+ARG  libmnl_v="-1.0.3-7.el7"
+ARG  libnetfilter_conntrack_v="-1.0.6-1.el7_3"
+ARG  libnfnetlink_v="-1.0.1-4.el7"
 #ARG  java_v="-1:1.8.0.242.b08-0.el7_7.x86_64"
 # This changes all the time.  Presumably for the better?  Old ones don't
 #  stick around on the repo.
@@ -24,6 +29,10 @@ ARG  osplice_v="-6.9.0"
 RUN  yum install -y --enablerepo=extras \
       "dos2unix${d2u_v}" \
       "iproute${iproute_v}" \
+      "iptables${iptables_v}" \
+      "libmnl${libmnl_v}" \
+      "libnfnetlink${libnfnetlink_v}" \
+      "libnetfilter_conntrack${libnetfilterconntrack_v}" \
       "java-1.8.0-openjdk-devel${java_v}" \
       "OpenSpliceDDS${osplice_v}"
 RUN  cd /usr/share/zoneinfo && \
