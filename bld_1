@@ -25,11 +25,18 @@ squash=""
 if [ -n "${SQUASH}" ]; then
     squash="--squash"
 fi
-
+network=""
+if [ -n "${BUILD_NETWORK}" ]; then
+    docker network create ${BUILD_NETWORK}
+    network="--network ${BUILD_NETWORK}"
+fi
 # You probably want to set DOCKER_BUILDKIT in your environment if your
 #  Docker supports it.
-docker build --progress=plain ${squash} -t ${IMAGE}:${VERSION} .
+docker build --progress=plain ${squash} ${network} -t ${IMAGE}:${VERSION} .
 rc=$?
+if [ -n "${BUILD_NETWORK}" ]; then
+    docker network rm ${BUILD_NETWORK}
+fi
 if [ "${rc}" -ne 0 ]; then
     echo 1>&2 "Docker build failed."
     exit 1
