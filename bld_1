@@ -31,7 +31,7 @@ if [ -n "${BUILD_NETWORK}" ]; then
     network="--network ${BUILD_NETWORK}"
 fi
 # You probably want to set DOCKER_BUILDKIT in your environment if your
-#  Docker supports it.
+#  Docker supports it.  But it and BUILD_NETWORK are incompatible.
 docker build --progress=plain ${squash} ${network} -t ${IMAGE}:${VERSION} .
 rc=$?
 if [ -n "${BUILD_NETWORK}" ]; then
