@@ -12,7 +12,7 @@ RUN  mkdir -p /opt/lsst/sal /opt/lsst/src
 #     -c "SAL user" -d /opt/lsst/sal/saluser saluser
 COPY lsst-ts.repo /etc/yum.repos.d
 RUN  yum repolist && \
-      yum install -y https://centos7.iuscommunity.org/ius-release.rpm
+      yum install -y https://repo.ius.io/ius-release-el7.rpm
 ARG  d2u_v="-6.0.3-7.el7"
 ARG  iproute_v="-4.11.0-25.el7_7.2"
 # These next four are iproute dependencies
