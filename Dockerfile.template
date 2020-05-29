@@ -71,8 +71,7 @@ RUN  pip3 install --upgrade \
       "sqlalchemy==${sqlal_v}" \
       "boto3==${boto3_v}" \
       "moto==${moto_v}" \
-      "black==${black_v}" \
-      "ts-dds==${ts_dds_v}"
+      "black==${black_v}"
 RUN source ${LOADSTACK} && \
      pip install --upgrade \
       "asynccmd==${asynccmd_v}" \
