@@ -264,7 +264,7 @@ ARG template="${rgh}/lsst-ts/charts/master/ospl-config/templates/_helpers.tpl"
 ARG targetdir="/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux/etc/config"
 
 # Fix up the interface definition for Nublado environment
-COPY fix_ospl.py /tmp/
+COPY fix_ospl.py /tmp/fix_ospl.py
 RUN  cd /tmp && \
      wget ${template} && \
      python3 /tmp/fix_ospl.py && \
