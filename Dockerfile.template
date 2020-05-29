@@ -55,6 +55,7 @@ ARG sqlal_v="1.3.10"
 ARG boto3_v="1.11.2"
 ARG moto_v="1.3.14"
 ARG black_v="19.10b0"
+ARG ts_dds_v="6.9.181127"
 
 RUN  pip3 install --upgrade \
       "asynccmd==${asynccmd_v}" \
@@ -69,7 +70,9 @@ RUN  pip3 install --upgrade \
       "pycodestyle==${pycdst_v}" \
       "sqlalchemy==${sqlal_v}" \
       "boto3==${boto3_v}" \
-      "moto==${moto_v}"
+      "moto==${moto_v}" \
+      "black==${black_v}" \
+      "ts-dds==${ts_dds_v}"
 RUN source ${LOADSTACK} && \
      pip install --upgrade \
       "asynccmd==${asynccmd_v}" \
@@ -85,7 +88,8 @@ RUN source ${LOADSTACK} && \
       "sqlalchemy==${sqlal_v}" \
       "boto3==${boto3_v}" \
       "moto==${moto_v}" \
-      "black==${black_v}"
+      "black==${black_v}" \
+      "ts-dds==${ts_dds_v}"
 ENV SRCDIR=/opt/lsst/src
 RUN mkdir -p /opt/lsst/sal
 ENV LSST_SDK_INSTALL=${SRCDIR}/ts_sal
@@ -169,8 +173,6 @@ RUN  cd ${LSST_SDK_INSTALL} && \
 RUN  cd ${SRCDIR} && \
       mkdir dds && \
       cd dds && \
-      os="/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux" && \
-      tar xvfz ${os}/tools/python-support.tgz && \
       dds_v="v6.9.0" && \
       git config --global user.email "saluser@lsst.org" && \
       git config --global user.name "SAL User" && \
