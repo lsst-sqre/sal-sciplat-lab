@@ -173,18 +173,8 @@ RUN  cd ${SRCDIR} && \
       mkdir dds && \
       cd dds && \
       dds_v="v6.9.0" && \
-      git config --global user.email "saluser@lsst.org" && \
-      git config --global user.name "SAL User" && \
-      git init && \
-      git add . && \
-      git checkout -b ${dds_v} && \
-      git commit -a -m ${dds_v} && \
-      git tag -a ${dds_v} -m ${dds_v} && \
-      cd python/src && \
-      source ${SALSTACK} && \
-      python setup.py install && \
       echo "/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux/lib" \
-       >> /etc/ld.so.conf.d/opensplice-x86_64.conf && \
+         >> /etc/ld.so.conf.d/opensplice-x86_64.conf && \
       ldconfig -v
 
 # Create IDL files and SALPY libraries for salobj unit tests.
