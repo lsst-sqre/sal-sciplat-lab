@@ -94,6 +94,7 @@ ENV PYTHON_BUILD_LOCATION=/opt/lsst/software/stack/python/current
 COPY salbldsteps.bash /opt/lsst/sal
 ENV SALSTACK=/opt/lsst/sal/salbldsteps.bash
 ENV LD_PRELOAD=""
+ENV TZ="right/UTC"
 
 #### Now move on to SAL object builds
 ARG ts_config_ocs="v0.5.0"
