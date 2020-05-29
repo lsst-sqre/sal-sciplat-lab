@@ -259,6 +259,13 @@ ARG  verdir="${jl}/versions.installed"
 # Make the "LSST" kernel set up ts_sal objects too
 COPY sal_lsstlaunch.bash ${jl}/lsstlaunch.bash
 
+ARG rgh=https://raw.githubusercontent.com/
+ARG template="${rgh}/lsst-ts/charts/master/ospl-config/templates/_helpers.tpl"
+# Add the network interface templates
+RUN  mkdir -p /opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux/etc/config && \
+      cd /opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux/etc/config && \
+      wget ${template}
+
 # Regenerate installed software list
 RUN  pip3 freeze > ${verdir}/requirements-system.txt && \
       source ${LOADSTACK} && \
