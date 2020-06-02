@@ -100,6 +100,7 @@ ENV LD_PRELOAD=""
 ENV TZ="right/UTC"
 
 #### Now move on to SAL object builds
+
 ARG ts_config_ocs="v0.5.0"
 ARG ts_config_attcs="v0.5.0"
 ARG ts_config_mtcalsys="v0.1.0"
@@ -112,14 +113,14 @@ ARG ts_salobj="v5.14.0"
 ARG ts_xml="v5.1.0"
 ARG ts_idl="v1.2.0"
 ARG ts_scriptqueue="v2.5.1"
-ARG ts_observatory_control="v0.2.0"
-ARG ts_standardscripts="v1.1.0"
+ARG ts_observatory_control="v0.2.2"
+ARG ts_standardscripts="v1.1.1"
 ARG ts_externalscripts="v0.4.0"
 ARG ts_ATMCSSimulator="v1.0.3"
-ARG ts_ATDome="v1.1.2"
-ARG ts_ATDomeTrajectory="v1.3.2"
-ARG ts_simactuators="v1.0.0"
-ARG ts_hexrotcomm="v0.5.0"
+ARG ts_ATDome="v1.1.3"
+ARG ts_ATDomeTrajectory="v1.3.3"
+ARG ts_simactuators="v1.0.1"
+ARG ts_hexrotcomm="v0.5.1"
 
 # Increase timeout from default of 60.
 ENV LSST_DDS_HISTORYSYNC=300
@@ -261,7 +262,7 @@ COPY fix_ospl.py /tmp/fix_ospl.py
 RUN  cd /tmp && \
      wget ${template} && \
      python3 /tmp/fix_ospl.py && \
-     mv opsl-config.xml.new ${targetdir}/ospl-config.xml && \
+     mv ospl-config.xml.new ${targetdir}/ospl-config.xml && \
      rm fix_ospl.py _helpers.tpl
 
 # Regenerate installed software list
