@@ -12,8 +12,12 @@ function usage() {
 }
 
 giturl="https://github.com/lsst-sqre/sal-sciplat-lab"
-BASE_IMAGE="lsstsqre/sciplat-lab"
-IMAGE_NAME="lsstsqre/sal-sciplat-lab"
+owner="lsstsqre"
+basename="sciplat-lab"
+imagename="sal-sciplat-lab"
+sal_env="master"
+BASE_IMAGE="${owner}/${basename}"
+IMAGE_NAME="${owner}/${imagename}"
 OPTIND=1
 DRY_RUN=0
 NOPUSH=0
@@ -47,26 +51,25 @@ TAG=${1}
 if [ -z "${TAG}" ] || [ $# -gt 1 ]; then
     usage
 fi
-dockerfile_template="Dockerfile.template"
 if [ -n "${ENVIRONMENT}" ]; then
-    IMAGE_NAME="${ENVIRONMENT}-{$IMAGE_NAME}"
-    # Clone branch into tempdir
-    tmpdir=$(mktemp -d)
-    git clone ${giturl} -b ${ENVIRONMENT} ${tmpdir}
-    dockerfile_template="${dockerfile_template}.$ENVIRONMENT"
-    # Copy template from correct branch
-    cp ${tempdir}/Dockerfile.template ${dockerfile_template}
-    rm -rf ${tempdir}
+    imagename="${ENVIRONMENT}-${imagename}"
+    IMAGE_NAME="${owner}/${imagename}"
+    sal_env=${ENVIRONMENT}
 fi
+cat Dockerfile.template.top \
+    SAL_versions.${sal_env} \
+    Dockerfile.template.bottom \
+    > Dockerfile.template
 VERSION=${TAG/#v/r}
 if [ "${JLBLEED}" -eq 1 ] ; then
     VERSION="exp_${VERSION}_jlbleed"
 fi
 sed -e "s|{{BASE_IMAGE}}|${BASE_IMAGE}|g" \
     -e "s|{{IMAGE_NAME}}|${IMAGE_NAME}|g" \
+    -e "s|{{ENV}}|${sal_env}|g" \
     -e "s|{{VERSION}}|${VERSION}|g" \
     -e "s|{{TAG}}|${TAG}|g" \
-    < ${dockerfile_template} > Dockerfile
+    < Dockerfile.template > Dockerfile
 if [ "${NOPUSH}" -eq 1 ]; then
     VERSION="nopush_${VERSION}"
 fi
@@ -75,4 +78,3 @@ if [ "${DRY_RUN}" -ne 0 ]; then
     exit 0
 fi
 ./bld_1
-
