@@ -2,25 +2,25 @@
 set -e
 
 function usage() {
-    echo 1>&2 "Usage: $0 [-d] [-x] [-j] [-b BASE_IMAGE] \\"
-    echo 1>&2 "           [-n IMAGE_NAME ] TAG"
+    echo 1>&2 "Usage: $0 [-d] [-x] [-j] [-e ENVIRONMENT ] TAG"
     echo 1>&2 "  -d enables dry run (no Docker build or push)"
     echo 1>&2 "  -x is 'do not push' (but does build)."
     echo 1>&2 "  -j adds 'exp_' to front and '_jlbleed' to end of tag."
-    echo 1>&2 "  default BASE_IMAGE='lsstsqre/sciplat-lab'"
-    echo 1>&2 "  default IMAGE_NAME='lsstsqre/sal-sciplat-lab'"
-    echo 1>&2 "  typical TAG='w_2017_35'"
+    echo 1>&2 "  default ENVIRONMENT=''; can be branch name (e.g. 'summit')"
+    echo 1>&2 "  typical TAG='w_2020_25'"
     exit 2
 }
 
+giturl="https://github.com/lsst-sqre/sal-sciplat-lab"
+BASE_IMAGE="lsstsqre/sciplat-lab"
+IMAGE_NAME="lsstsqre/sal-sciplat-lab"
 OPTIND=1
 DRY_RUN=0
 NOPUSH=0
 JLBLEED=0
-BASE_IMAGE="lsstsqre/sciplat-lab"
-IMAGE_NAME="lsstsqre/sal-sciplat-lab"
+ENVIRONMENT=""
 TAG_PREFIX=""
-while getopts ':hdxjn:b:' opt; do
+while getopts ':hdxje:' opt; do
     case $opt in
     h)
         usage
@@ -34,11 +34,8 @@ while getopts ':hdxjn:b:' opt; do
     j)
 	JLBLEED=1
 	;;
-    b)
-        BASE_IMAGE=${OPTARG}
-        ;;
-    n)
-        IMAGE_NAME=${OPTARG}
+    e)
+        ENVIRONMENT=${OPTARG}
         ;;
     \?)
         usage
@@ -50,6 +47,17 @@ TAG=${1}
 if [ -z "${TAG}" ] || [ $# -gt 1 ]; then
     usage
 fi
+dockerfile_template="Dockerfile.template"
+if [ -n "${ENVIRONMENT}" ]; then
+    IMAGE_NAME="${ENVIRONMENT}-{$IMAGE_NAME}"
+    # Clone branch into tempdir
+    tmpdir=$(mktemp -d)
+    git clone ${giturl} -b ${ENVIRONMENT} ${tmpdir}
+    dockerfile_template="${dockerfile_template}.$ENVIRONMENT"
+    # Copy template from correct branch
+    cp ${tempdir}/Dockerfile.template ${dockerfile_template}
+    rm -rf ${tempdir}
+fi
 VERSION=${TAG/#v/r}
 if [ "${JLBLEED}" -eq 1 ] ; then
     VERSION="exp_${VERSION}_jlbleed"
@@ -58,7 +66,7 @@ sed -e "s|{{BASE_IMAGE}}|${BASE_IMAGE}|g" \
     -e "s|{{IMAGE_NAME}}|${IMAGE_NAME}|g" \
     -e "s|{{VERSION}}|${VERSION}|g" \
     -e "s|{{TAG}}|${TAG}|g" \
-    < Dockerfile.template > Dockerfile
+    < ${dockerfile_template} > Dockerfile
 if [ "${NOPUSH}" -eq 1 ]; then
     VERSION="nopush_${VERSION}"
 fi
