@@ -72,6 +72,8 @@ if [ -n "${sal_link}" ]; then
 	srcimg="${owner}/${tgt}-sal-sciplat-lab"
     fi
     # Fix release tags
+    VERSION=${TAG/#v/r}
+    TAG="${VERSION}"
     if [ "${TAG:0:1}" == "v" ]; then
 	TAG="r${TAG:1}"
     fi
