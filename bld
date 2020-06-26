@@ -71,8 +71,8 @@ if [ -n "${sal_link}" ]; then
 	$0 -e ${tgt} ${TAG}
 	srcimg="${owner}/${tgt}-sal-sciplat-lab"
     fi
-    docker tag ${srcimg}:${TAG} ${IMAGENAME}:${TAG}
-    docker push ${IMAGENAME}:${TAG}
+    docker tag ${srcimg}:${TAG} ${IMAGE_NAME}:${TAG}
+    docker push ${IMAGE_NAME}:${TAG}
     EXPERIMENTAL=0
     etag=$(echo "${VERSION}" | cut -d '_' -f 1)
     if [ "${etag}" = "exp" ]; then
@@ -95,11 +95,11 @@ if [ -n "${sal_link}" ]; then
 		;;
 	esac
 	if [ -n "$itype" ]; then
-            docker tag ${IMAGENAME}:${TAG} ${IMAGENAME}:latest_${itype}
-            docker push ${IMAGENAME}:latest_${itype}
+            docker tag ${IMAGE_NAME}:${TAG} ${IMAGE_NAME}:latest_${itype}
+            docker push ${IMAGE_NAME}:latest_${itype}
 	fi
-	docker tag ${IMAGENAME}:${TAG} ${IMAGENAME}:latest
-	docker push ${IMAGENAME}:latest
+	docker tag ${IMAGE_NAME}:${TAG} ${IMAGE_NAME}:latest
+	docker push ${IMAGE_NAME}:latest
     fi
     exit 0 # We're done: no build, just tag-and-push
 fi
