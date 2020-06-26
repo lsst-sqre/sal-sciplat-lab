@@ -71,6 +71,10 @@ if [ -n "${sal_link}" ]; then
 	$0 -e ${tgt} ${TAG}
 	srcimg="${owner}/${tgt}-sal-sciplat-lab"
     fi
+    # Fix release tags
+    if [ "${TAG:0:1}" == "v" ]; then
+	TAG="r${TAG:1}"
+    fi
     docker tag ${srcimg}:${TAG} ${IMAGE_NAME}:${TAG}
     docker push ${IMAGE_NAME}:${TAG}
     EXPERIMENTAL=0
