@@ -57,7 +57,7 @@ if [ -n "${ENVIRONMENT}" ]; then
     sal_env=${ENVIRONMENT}
 fi
 salfile="SAL_versions.${sal_env}"
-sal_link=$(readlink ${salfile} || /bin/true)
+sal_link=$(readlink ${salfile} || true)
 if [ -n "${sal_link}" ]; then
    # This sal file is a symlink, so we will build the real version
    #  and then just create tags pointing to it.
