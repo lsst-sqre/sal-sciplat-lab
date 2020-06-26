@@ -2,7 +2,7 @@
 set -e
 
 function usage() {
-    echo 1>&2 "Usage: $0 [-d] [-x] [-j] [-e ENVIRONMENT ] TAG"
+    echo 1>&2 "Usage: $0 [-e ENVIRONMENT ] TAG"
     echo 1>&2 "  -d enables dry run (no Docker build or push)"
     echo 1>&2 "  -x is 'do not push' (but does build)."
     echo 1>&2 "  -j adds 'exp_' to front and '_jlbleed' to end of tag."
@@ -56,6 +56,54 @@ if [ -n "${ENVIRONMENT}" ]; then
     IMAGE_NAME="${owner}/${imagename}"
     sal_env=${ENVIRONMENT}
 fi
+salfile="SAL_versions.${salenv}"
+sal_link=$(readlink ${salfile})
+if [ -n "${sal_link}" ]; then
+   # This sal file is a symlink, so we will build the real version
+   #  and then just create tags pointing to it.
+    tgt = $(echo ${sal_link} | cut -d '.' -f 2)
+    if [ ${tgt} == "master" ]; then
+	# Build real version with no environment tag
+	$0 ${TAG}
+	srcimg="${owner}/sal-sciplat-lab"
+    else
+	# Build real version with environment tag referencing target file.
+	$0 -e ${tgt} ${TAG}
+	srcimg="${owner}/${tgt}-sal-sciplat-lab"
+    fi
+    docker tag ${srcimg}:${TAG} ${IMAGENAME}:${TAG}
+    docker push ${IMAGENAME}:${TAG}
+    EXPERIMENTAL=0
+    etag=$(echo "${VERSION}" | cut -d '_' -f 1)
+    if [ "${etag}" = "exp" ]; then
+	EXPERIMENTAL=1
+    fi
+    if [ "${EXPERIMENTAL}" -ne 1 ]; then
+	ichar=$(echo "${VERSION}" | cut -c 1)
+	itype=""
+	case $ichar in
+	    "r")
+		itype="release"
+		;;
+	    "w")
+		itype="weekly"
+		;;
+	    "d")
+		itype="daily"
+		;;
+	    *)
+		;;
+	esac
+	if [ -n "$itype" ]; then
+            docker tag ${IMAGENAME}:${TAG} ${IMAGENAME}:latest_${itype}
+            docker push ${IMAGENAME}:latest_${itype}
+	fi
+	docker tag ${IMAGENAME}:${TAG} ${IMAGENAME}:latest
+	docker push ${IMAGENAME}:latest
+    fi
+    exit 0 # We're done: no build, just tag-and-push
+fi
+# But if we got here, we need to actually do the build.
 cat Dockerfile.template.top \
     SAL_versions.${sal_env} \
     Dockerfile.template.bottom \
