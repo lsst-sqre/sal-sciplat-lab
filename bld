@@ -56,7 +56,7 @@ if [ -n "${ENVIRONMENT}" ]; then
     IMAGE_NAME="${owner}/${imagename}"
     sal_env=${ENVIRONMENT}
 fi
-salfile="SAL_versions.${salenv}"
+salfile="SAL_versions.${sal_env}"
 sal_link=$(readlink ${salfile} || /bin/true)
 if [ -n "${sal_link}" ]; then
    # This sal file is a symlink, so we will build the real version
