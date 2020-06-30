@@ -1,5 +1,3 @@
-# Increase timeout from default of 60.
-ENV LSST_DDS_HISTORYSYNC=300
 RUN source ${LOADSTACK} && \
     cd ${SRCDIR} && \
     gitsrc="ts_config_ocs:${ts_config_ocs} \
