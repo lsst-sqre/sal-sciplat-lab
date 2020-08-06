@@ -132,11 +132,11 @@ ARG targetdir="/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux/etc/config"
 ARG xmlfile="${targetdir}/ospl.xml"
 
 # Fix up the interface definition for Nublado environment
-COPY fix_ospl.py /tmp/fix_ospl.py
+COPY mod_ospl.py /tmp/mod_ospl.py
 RUN  cd /tmp && \
      copy ${xmlfile} /tmp \ &&
-     python3 /tmp/fix_ospl.py /tmp/ospl.xml ${xmlfile} net1 && \
-     rm fix_ospl.py ospl.xml
+     python3 mod_ospl.py ospl.xml ${xmlfile} net1 && \
+     rm mod_ospl.py ospl.xml
 
 # Regenerate installed software list
 RUN  pip3 freeze > ${verdir}/requirements-system.txt && \
