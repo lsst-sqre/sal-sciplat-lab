@@ -128,17 +128,15 @@ ARG  verdir="${jl}/versions.installed"
 # Make the "LSST" kernel set up ts_sal objects too
 COPY sal_lsstlaunch.bash ${jl}/lsstlaunch.bash
 
-ARG rgh=https://raw.githubusercontent.com/
-ARG template="${rgh}/lsst-ts/charts/master/ospl-config/templates/_helpers.tpl"
 ARG targetdir="/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux/etc/config"
+ARG xmlfile="${targetdir}/ospl.xml"
 
 # Fix up the interface definition for Nublado environment
 COPY fix_ospl.py /tmp/fix_ospl.py
 RUN  cd /tmp && \
-     wget ${template} && \
-     python3 /tmp/fix_ospl.py && \
-     mv ospl-config.xml.new ${targetdir}/ospl-config.xml && \
-     rm fix_ospl.py _helpers.tpl
+     copy ${xmlfile} /tmp \ &&
+     python3 /tmp/fix_ospl.py /tmp/ospl.xml ${xmlfile} net1 && \
+     rm fix_ospl.py ospl.xml
 
 # Regenerate installed software list
 RUN  pip3 freeze > ${verdir}/requirements-system.txt && \
