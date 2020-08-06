@@ -36,6 +36,7 @@ ENV LSST_DDS_DOMAIN=citest
 # Build SAL. Test us unstable with scons. Rerun with pytest if it fails
 RUN  cd ${LSST_SDK_INSTALL} && \
       source ${SALSTACK} && \
+      unset LD_PRELOAD && \
       mkdir -p ${SAL_WORK_DIR} && \
       mkdir -p ${TS_SAL_DIR}/lib && \
       setup ts_sal -t current && \
@@ -54,6 +55,7 @@ RUN  cd ${SRCDIR} && \
 # Create IDL files and SALPY libraries for salobj unit tests.
 RUN  cd ${LSST_SDK_INSTALL} && \
       source ${SALSTACK} && \
+      unset LD_PRELOAD && \
       setup ts_sal -t current && \
       setup ts_idl -t current && \
       make_idl_files.py Test Script LOVE && \
@@ -65,6 +67,7 @@ RUN  cd ${LSST_SDK_INSTALL} && \
 # First run consistently fails and second once succeeds.
 RUN  cd ${SRCDIR}/ts_salobj && \
       source ${SALSTACK} && \
+      unset LD_PRELOAD && \
       setup ts_salobj -t current && \
       pytest || pytest --lf
 
@@ -73,6 +76,7 @@ RUN  cd ${LSST_SDK_INSTALL} && \
       source ${SALSTACK} && \
       setup ts_sal -t current && \
       setup ts_idl -t current && \
+      unset LD_PRELOAD && \
       make_idl_files.py --all
 
 # It's tempting to do this in a loop, but if you do, you lose all incremental
