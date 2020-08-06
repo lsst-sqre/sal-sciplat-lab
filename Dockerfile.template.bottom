@@ -134,7 +134,7 @@ ARG xmlfile="${targetdir}/ospl.xml"
 # Fix up the interface definition for Nublado environment
 COPY mod_ospl.py /tmp/mod_ospl.py
 RUN  cd /tmp && \
-     copy ${xmlfile} /tmp && \
+     cp ${xmlfile} /tmp && \
      python3 mod_ospl.py ospl.xml ${xmlfile} net1 && \
      rm mod_ospl.py ospl.xml
 
