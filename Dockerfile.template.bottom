@@ -133,12 +133,11 @@ ARG template="${rgh}/lsst-ts/charts/master/ospl-config/templates/_helpers.tpl"
 ARG targetdir="/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux/etc/config"
 
 # Fix up the interface definition for Nublado environment
-COPY fix_ospl.py /tmp/fix_ospl.py
+COPY mod_ospl.py /tmp/mod_ospl.py
 RUN  cd /tmp && \
      wget ${template} && \
-     python3 /tmp/fix_ospl.py && \
-     mv ospl-config.xml.new ${targetdir}/ospl-config.xml && \
-     rm fix_ospl.py _helpers.tpl
+     python3 /tmp/mod_ospl.py ./_helpers.tpl ${targetdir}/ospl.xml net1 && \
+     rm mod_ospl.py _helpers.tpl
 
 # Regenerate installed software list
 RUN  pip3 freeze > ${verdir}/requirements-system.txt && \
