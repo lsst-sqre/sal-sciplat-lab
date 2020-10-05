@@ -99,4 +99,9 @@ ENV SALSTACK=/opt/lsst/sal/salbldsteps.bash
 ENV LD_PRELOAD=""
 ENV TZ="right/UTC"
 
+#### Clear the astropy download cache
+RUN source ${LOADSTACK} && \
+    python3 -c 'from astropy.utils.data import clear_download_cache; \
+                clear_download_cache()'
+
 #### Now move on to SAL object builds
