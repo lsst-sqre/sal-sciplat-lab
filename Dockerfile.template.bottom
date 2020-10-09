@@ -96,9 +96,6 @@ RUN  cd ${SRCDIR}/ts_hexrotcomm && \
       source ${SALSTACK} && \
       setup ts_salobj -t current && \
       setup ts_config_mttcs -t current && \
-      d="/opt/lsst/src/ts_config_mttcs/Rotator/v1" && \
-      echo "FIXME: '${d}' should not need explicit creation" && \
-      mkdir -p ${d} && \
       setup ts_hexrotcomm -t current && \
       scons || (echo 'SCONS FAILED: running pytest' && pytest --lf)
 RUN  cd ${SRCDIR}/ts_ATMCSSimulator && \
