@@ -139,12 +139,8 @@ COPY sal_lsstlaunch.bash ${jl}/lsstlaunch.bash
 ARG targetdir="/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux/etc/config"
 ARG xmlfile="${targetdir}/ospl.xml"
 
-# Fix up the interface definition for Nublado environment
-COPY mod_ospl.py /tmp/mod_ospl.py
-RUN  cd /tmp && \
-     cp ${xmlfile} /tmp && \
-     python3 mod_ospl.py ospl.xml ${xmlfile} net1 && \
-     rm mod_ospl.py ospl.xml
+# Replace ospl.xml with the environment-templated one
+COPY ospl.xml ${xmlfile}
 
 # Regenerate installed software list
 RUN  pip3 freeze > ${verdir}/requirements-system.txt && \
