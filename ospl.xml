@@ -13,6 +13,36 @@
         <Service enabled="false" name="cmsoap">
             <Command>cmsoap</Command>
         </Service>
+        <Daemon>
+          <Watchdog>
+             <Scheduling>
+                <Class>Default</Class>
+                <Priority>0</Priority>
+             </Scheduling>
+             <StackSize>6000000</StackSize>
+          </Watchdog>
+          <KernelManager>
+             <Scheduling>
+                <Class>Default</Class>
+                <Priority>0</Priority>
+             </Scheduling>
+             <StackSize>6000000</StackSize>
+          </KernelManager>
+          <GarbageCollector>
+             <Scheduling>
+                <Class>Default</Class>
+                <Priority>0</Priority>
+             </Scheduling>
+             <StackSize>6000000</StackSize>
+          </GarbageCollector>
+          <ResendManager>
+             <Scheduling>
+                <Class>Default</Class>
+                <Priority>0</Priority>
+             </Scheduling>
+             <StackSize>6000000</StackSize>
+          </ResendManager>
+        </Daemon>
     </Domain>
     <DDSI2Service name="ddsi2">
         <General>
@@ -27,6 +57,9 @@
         <Discovery>
            <ParticipantIndex>none</ParticipantIndex>
         </Discovery>
+        <Internal>
+          <SquashParticipants>true</SquashParticipants>
+        </Internal>
      </DDSI2Service>
     <DurabilityService name="durability">
         <Network>
@@ -45,7 +78,11 @@
             <NameSpace name="defaultNamespace">
               <Partition>${LSST_DDS_PARTITION_PREFIX}*</Partition>
             </NameSpace>
-            <Policy alignee="Initial" aligner="true" durability="Durable" masterPriority="${OSPL_MASTER_PRIORITY:-1}" nameSpace="defaultNamespace" />
+            <Policy alignee="Lazy"
+                    aligner="true"
+                    durability="Durable"
+                    masterPriority="${OSPL_MASTER_PRIORITY:-1}"
+                    nameSpace="defaultNamespace" />
         </NameSpaces>
     </DurabilityService>
     <TunerService name="cmsoap">
