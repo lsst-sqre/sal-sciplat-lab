@@ -7,6 +7,7 @@ RUN source ${LOADSTACK} && \
             ts_config_latiss:${ts_config_latiss} \
             ts_config_mttcs:${ts_config_mttcs} \
             ts_config_atcalsys:${ts_config_atcalsys} \
+            ts_ddsconfig:${ts_ddsconfig} \
             ts_sal:${ts_sal} \
             ts_salobj:${ts_salobj} \
             ts_xml:${ts_xml} \
