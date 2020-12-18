@@ -32,7 +32,7 @@ RUN source ${LOADSTACK} && \
         cd .. ; \
     done
 
-ENV LSST_DDS_DOMAIN=citest
+ENV LSST_DDS_PARTITION_PREFIX=citest
 
 # Build SAL. Test us unstable with scons. Rerun with pytest if it fails
 RUN  cd ${LSST_SDK_INSTALL} && \
