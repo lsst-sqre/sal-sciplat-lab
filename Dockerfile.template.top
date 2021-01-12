@@ -72,6 +72,8 @@ RUN  pip3 install --upgrade \
       "boto3==${boto3_v}" \
       "moto==${moto_v}" \
       "black==${black_v}"
+# moto, boto3, and sqlalchemy are already in the stack env.
+#  When rubinenv lands, documenteer will be too.
 RUN source ${LOADSTACK} && \
      pip install --upgrade \
       "asynccmd==${asynccmd_v}" \
@@ -84,9 +86,6 @@ RUN source ${LOADSTACK} && \
       "jinja2==${jinja2_v}" \
       "kafkit[aiohttp]==${kafkit_v}" \
       "pycodestyle==${pycdst_v}" \
-      "sqlalchemy==${sqlal_v}" \
-      "boto3==${boto3_v}" \
-      "moto==${moto_v}" \
       "black==${black_v}" \
       "ts-dds==${ts_dds_v}"
 ENV SRCDIR=/opt/lsst/src
