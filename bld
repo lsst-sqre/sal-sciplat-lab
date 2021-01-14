@@ -2,7 +2,7 @@
 set -e
 
 function usage() {
-    echo 1>&2 "Usage: $0 [-e ENVIRONMENT ] TAG"
+    echo 1>&2 "Usage: $0 [-d] [-x] [-j] [-e ENVIRONMENT ] TAG"
     echo 1>&2 "  -d enables dry run (no Docker build or push)"
     echo 1>&2 "  -x is 'do not push' (but does build)."
     echo 1>&2 "  -j adds 'exp_' to front and '_jlbleed' to end of tag."
