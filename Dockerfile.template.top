@@ -92,7 +92,7 @@ ENV TZ="right/UTC"
 # The ts-dds package requires not just a stack environment but a
 #  SAL environment
 RUN source ${SALSTACK} && \
-     pip wheel \
+     pip install --upgrade \
       "ts-dds==${ts_dds_v}"
 #### Clear the astropy download cache
 RUN source ${LOADSTACK} && \
