@@ -91,15 +91,9 @@ ENV OSPL_HOME=/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux
 ENV TZ="right/UTC"
 # The ts-dds package requires not just a stack environment but a
 #  SAL environment
-#RUN source ${SALSTACK} && \
-#     pip install --upgrade --no-cache-dir \
-#      "ts-dds==${ts_dds_v}"
-# This can't be good.  Jenkins wants to build from source, and fails.
-#  So we can force the wheel this way....
-ARG dds_url="https://files.pythonhosted.org/packages/89/4b/507b3f829e241bafd7983aa794668dde827e0518dc478bb02416dea084ae/ts_dds-6.9.190705.post8-cp37-cp37m-manylinux1_x86_64.whl"
 RUN source ${SALSTACK} && \
-     pip install ${dds_url}
-      
+     pip install --upgrade \
+      "ts-dds==${ts_dds_v}"
 #### Clear the astropy download cache
 RUN source ${LOADSTACK} && \
     python3 -c 'from astropy.utils.data import clear_download_cache; \
