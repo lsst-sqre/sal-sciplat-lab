@@ -69,6 +69,7 @@ RUN  pip3 install --upgrade \
       "black==${black_v}"
 # moto, boto3, and sqlalchemy are already in the stack env.
 #  When rubinenv lands, documenteer will be too.
+ENV OSPL_HOME=/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux
 RUN source ${LOADSTACK} && \
      pip install --upgrade \
       "asynccmd==${asynccmd_v}" \
@@ -84,7 +85,6 @@ RUN source ${LOADSTACK} && \
 ENV SRCDIR=/opt/lsst/src
 RUN mkdir -p /opt/lsst/sal
 ENV LSST_SDK_INSTALL=${SRCDIR}/ts_sal
-ENV OSPL_HOME=/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux
 ENV PYTHON_BUILD_LOCATION=/opt/lsst/software/stack/python/current
 COPY salbldsteps.bash /opt/lsst/sal
 ENV SALSTACK=/opt/lsst/sal/salbldsteps.bash
