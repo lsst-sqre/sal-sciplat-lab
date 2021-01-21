@@ -12,5 +12,9 @@ PYTHON_LIBRARY_DIR=${PYTHON_BUILD_LOCATION}/lib
 export PYTHON_LIBRARY_DIR PYTHON_INCLUDE_DIR PYTHON_BUILD_VERSION
 OSPL_MASTER_PRIORITY=1
 export OSPL_MASTER_PRIORITY
-source ${LSST_SDK_INSTALL}/setup.env
+setupscript=${LSST_SDK_INSTALL}/setup.env
+if [ -f "${OSPL_HOME}/release.com" ]; then
+    setupscript=${OSPL_HOME}/release.com
+fi
+source ${setupscript}
 
