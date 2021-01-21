@@ -69,7 +69,6 @@ RUN  pip3 install --upgrade \
       "black==${black_v}"
 # moto, boto3, and sqlalchemy are already in the stack env.
 #  When rubinenv lands, documenteer will be too.
-ENV OSPL_HOME=/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux
 RUN source ${LOADSTACK} && \
      pip install --upgrade \
       "asynccmd==${asynccmd_v}" \
@@ -80,8 +79,8 @@ RUN source ${LOADSTACK} && \
       "ephem==${ephem_v}" \
       "kafkit[aiohttp]==${kafkit_v}" \
       "pycodestyle==${pycdst_v}" \
-      "black==${black_v}" \
-      "ts-dds==${ts_dds_v}"
+      "black==${black_v}"
+ENV OSPL_HOME=/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux
 ENV SRCDIR=/opt/lsst/src
 RUN mkdir -p /opt/lsst/sal
 ENV LSST_SDK_INSTALL=${SRCDIR}/ts_sal
@@ -90,7 +89,11 @@ COPY salbldsteps.bash /opt/lsst/sal
 ENV SALSTACK=/opt/lsst/sal/salbldsteps.bash
 ENV LD_PRELOAD=""
 ENV TZ="right/UTC"
-
+# The ts-dds package requires not just a stack environment but a
+#  SAL environment
+RUN source ${SALSTACK} && \
+     pip install --upgrade \
+      "ts-dds==${ts_dds_v}"
 #### Clear the astropy download cache
 RUN source ${LOADSTACK} && \
     python3 -c 'from astropy.utils.data import clear_download_cache; \
