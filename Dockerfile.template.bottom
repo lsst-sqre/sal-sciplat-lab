@@ -22,6 +22,7 @@ RUN source ${LOADSTACK} && \
             ts_externalscripts:${ts_externalscripts} \
             ts_scriptqueue:${ts_scriptqueue}" && \
     rb="https://github.com/lsst-ts" && \
+    set -e && \
     for g in $gitsrc ; do \
         r=$(echo ${g} | cut -d ':' -f 1) \
         t=$(echo ${g} | cut -d ':' -f 2) ;\
