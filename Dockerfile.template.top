@@ -14,9 +14,9 @@ COPY lsst-ts.repo /etc/yum.repos.d
 RUN  yum repolist && \
       yum install -y https://repo.ius.io/ius-release-el7.rpm
 ARG  d2u_v="-6.0.3-7.el7"
-ARG  iproute_v="-4.11.0-25.el7_7.2"
+ARG  iproute_v="iproute-4.11.0-30.el7"
 # These next four are iproute dependencies
-ARG  iptables_v="-1.4.21-34.el7"
+ARG  iptables_v="-1.4.21-35.el7"
 ARG  libmnl_v="-1.0.3-7.el7"
 ARG  libnetfilter_conntrack_v="-1.0.6-1.el7_3"
 ARG  libnfnetlink_v="-1.0.1-4.el7"
