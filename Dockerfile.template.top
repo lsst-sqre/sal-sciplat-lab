@@ -88,7 +88,7 @@ COPY salbldsteps.bash /opt/lsst/sal
 ENV SALSTACK=/opt/lsst/sal/salbldsteps.bash
 ENV LD_PRELOAD=""
 ENV OSPL_HOME=/opt/OpenSpliceDDS/V6.9.0/HDE/x86_64.linux
-ENV TZ="right/UTC"
+ENV TZ="UTC"
 # The ts-dds package requires not just a stack environment but a
 #  SAL environment
 RUN source ${SALSTACK} && \
