@@ -26,7 +26,7 @@ ARG  libnfnetlink_v="-1.0.1-4.el7"
 ARG  java_v="1.8.0"
 # Use just the OpenSplice version (e.g. 6.9.0) so we capture the latest TSS rev
 # Nope, pin.
-ARG  osplice_version="6.9.0"
+ARG  osplice_v="6.9.0"
 ARG  osplice_build="12"
 ARG  osplice_el="el7"
 ARG  osplice_py="py38"
@@ -39,7 +39,7 @@ RUN  yum install -y --enablerepo=extras \
       "libnfnetlink${libnfnetlink_v}" \
       "libnetfilter_conntrack${libnetfilterconntrack_v}" \
       "java-${java_v}-openjdk-devel" \
-      "OpenSpliceDDS-${osplice_version}-${osplice_build}.${osplice_el}"
+      "OpenSpliceDDS-${osplice_v}-${osplice_build}.${osplice_el}"
 RUN  cd /usr/share/zoneinfo && \
       wget https://www.ietf.org/timezones/data/leap-seconds.list
 
@@ -59,7 +59,7 @@ ARG setuptools_scm=5.0
 # Install ts-dds
 RUN source ${LOADSTACK} && \
      conda install -c conda-forge -y librdkafka && \
-     conda install -c lsstts ts-dds=${osplice_version}=${osplice_py}_${osplice_build} aiokafka=${aiokafka} astroquery=${astroquery} asynctest=${asynctest} black=${black} ephem=${ephem} kafkacat=${kafkacat} pre-commit=${pre_commit} pytest-asyncio=${pytest_asyncio} pytest-black=${pytest_black} pytest-tornasync=${pytest_tornasync} setuptools_scm=${setuptools_scm}
+     conda install -c lsstts ts-dds=${osplice_v}=${osplice_py}_${osplice_build} aiokafka=${aiokafka} astroquery=${astroquery} asynctest=${asynctest} black=${black} ephem=${ephem} kafkacat=${kafkacat} pre-commit=${pre_commit} pytest-asyncio=${pytest_asyncio} pytest-black=${pytest_black} pytest-tornasync=${pytest_tornasync} setuptools_scm=${setuptools_scm}
 
 RUN source ${LOADSTACK} && \
     pip install  --upgrade --force-reinstall black==19.10b0
