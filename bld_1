@@ -1,16 +1,16 @@
 #!/bin/bash
 # This relies on a few things:
-#  1) "name" and "version" first appear in a Dockerfile as part of a label.
+#  1) "name" and "version" last appear in a Dockerfile as part of a label.
 #  2) They're on separate lines (the same logical line with continuations
 #       is OK).
 #  3) Versions starting with "exp_" will not be tagged or pushed as "latest".
 #  4) Versions starting with "nopush_" will not be pushed at all.
 IMAGE=$(  grep name\= Dockerfile | \
-          head -1 | \
+          tail -1 | \
           sed -e    's/name=\"\(.*\)\"/\1/' | \
           tr -d '[[:space:]]' | tr -d '\\' )
 VERSION=$(grep version\= Dockerfile | \
-          head -1 | \
+          tail -1 | \
           sed -e 's/version=\"\(.*\)\"/\1/' | \
           tr -d '[[:space:]]' | tr -d '\\' )
 if [ -z "${IMAGE}" ]; then
