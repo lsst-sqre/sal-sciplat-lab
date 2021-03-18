@@ -44,26 +44,19 @@ RUN  cd /usr/share/zoneinfo && \
       curl https://www.ietf.org/timezones/data/leap-seconds.list \
        -o leap-seconds.list
 
-ARG aiokafka=0.7
-ARG astroquery=0.4
-ARG asynctest=0.13
-ARG black=19.10b0
-ARG ephem=3
-ARG kafkacat=1.4
-ARG pre_commit=2.10
-ARG pytest_asyncio=0.14
-ARG pytest_black=0.3
-ARG pytest_tornasync=0.6
-ARG setuptools_scm=5.0
-
 # We need librdkafka in the stack env to build confluent_kakfa
+# Use mamba rather than conda for speed of solve
+# Only pin black and ts-dds
+ARG black_v=19.10b0
+RUN source ${LOADSTACK} && \
+     mamba install --no-banner -c conda-forge -y \
+      librdkafka aiokafka astroquery asynctest \
+      ephem kafkacat pre-commit pytest-asyncio pytest-tornasync \
+      setuptools_scm pytest-black black=${black_v}
 # Install ts-dds
 RUN source ${LOADSTACK} && \
-     conda install -c conda-forge -y librdkafka && \
-     conda install -c lsstts ts-dds=${osplice_v}=${osplice_py}_${osplice_build} aiokafka=${aiokafka} astroquery=${astroquery} asynctest=${asynctest} black=${black} ephem=${ephem} kafkacat=${kafkacat} pre-commit=${pre_commit} pytest-asyncio=${pytest_asyncio} pytest-black=${pytest_black} pytest-tornasync=${pytest_tornasync} setuptools_scm=${setuptools_scm}
-
-RUN source ${LOADSTACK} && \
-    pip install  --upgrade --force-reinstall black==19.10b0
+     mamba install --no-banner -c lsstts -y \
+      ts-dds=${osplice_v}=${osplice_py}_${osplice_build}
 
 ENV SRCDIR=/opt/lsst/src
 RUN mkdir -p /opt/lsst/sal
