@@ -41,7 +41,8 @@ RUN  yum install -y --enablerepo=extras \
       "java-${java_v}-openjdk-devel" \
       "OpenSpliceDDS-${osplice_v}-${osplice_build}.${osplice_el}"
 RUN  cd /usr/share/zoneinfo && \
-      wget https://www.ietf.org/timezones/data/leap-seconds.list
+      curl https://www.ietf.org/timezones/data/leap-seconds.list \
+       -o leap-seconds.list
 
 ARG aiokafka=0.7
 ARG astroquery=0.4
