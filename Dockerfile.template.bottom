@@ -145,9 +145,13 @@ ARG xmlfile="${targetdir}/ospl.xml"
 COPY ospl.xml ${xmlfile}
 
 # Regenerate installed software list
-RUN  pip3 freeze > ${verdir}/requirements-system.txt && \
-      source ${LOADSTACK} && \
+RUN  source ${LOADSTACK} && \
       pip3 freeze > ${verdir}/requirements-stack.txt && \
+      mamba list --export > ${verdir}/conda-stack.txt && \
+      conda env export > ${verdir}/conda-stack-orig.yml && \
+      grep -v 'pyjs9' ${verdir}/conda-stack-orig.yml > \
+        ${verdir}/conda-stack.yml && \
+      rm ${verdir}/conda-stack-orig.yml && \
       rpm -qa | sort > ${verdir}/rpmlist.txt
 
 # Clean up /tmp
