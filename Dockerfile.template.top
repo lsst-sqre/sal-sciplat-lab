@@ -27,7 +27,7 @@ ARG  java_v="1.8.0"
 # Use just the OpenSplice version (e.g. 6.9.0) so we capture the latest TSS rev
 # Nope, pin.
 ARG  osplice_v="6.9.0"
-ARG  osplice_build="12"
+ARG  osplice_build="16"
 ARG  osplice_el="el7"
 ARG  osplice_py="py38"
 
@@ -47,7 +47,7 @@ RUN  cd /usr/share/zoneinfo && \
 # We need librdkafka in the stack env to build confluent_kakfa
 # Use mamba rather than conda for speed of solve
 # Only pin black and ts-dds
-ARG black_v=19.10b0
+ARG black_v=20.8b1
 RUN source ${LOADSTACK} && \
      mamba install --no-banner -c conda-forge -y \
       librdkafka aiokafka astroquery asynctest \
