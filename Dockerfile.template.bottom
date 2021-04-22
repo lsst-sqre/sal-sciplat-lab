@@ -1,3 +1,12 @@
+# If we are pinning back black, we need to explicitly downgrade it.
+RUN if [ -n "${black_v}" ]; then \
+        sv="$(echo ${black_v} | cut -d '.' -f 1)" ; \
+        if [ ${sv} -lt 20 ]; then \
+            source ${LOADSTACK} && \
+            mamba install --no-banner -c conda-forge -y \
+            black=${black_v} ; \
+        fi ; \
+    fi
 RUN source ${LOADSTACK} && \
     cd ${SRCDIR} && \
     gitsrc="ts_config_ocs:${ts_config_ocs} \
