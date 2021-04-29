@@ -1,8 +1,12 @@
-# If we are pinning back black, we need to explicitly downgrade it.
+# Stack and SAL black may not be the same.  If SAL black version is defined,
+#  compare it and stack, and install SAL version if their major versions
+#  differ
 RUN if [ -n "${black_v}" ]; then \
         sv="$(echo ${black_v} | cut -d '.' -f 1)" ; \
-        if [ ${sv} -lt 20 ]; then \
-            source ${LOADSTACK} && \
+        source ${LOADSTACK} ; \
+        stack_black=$(python3 -c 'import black; print(black.__version__)') ; \
+        ssb="$(echo ${stack_black} | cut -d '.' -f 1)" ; \
+        if [ ${sv} -ne ${ssb} ]; then \
             mamba install --no-banner -c conda-forge -y \
             black=${black_v} ; \
         fi ; \
